@@ -105,3 +105,5 @@ GitHub의 기본 `GITHUB_TOKEN`만으로 Pages 최초 활성화를 할 수 없�
 - 일본판 15.7.1 / 대만판 15.5 기반 데이터로, 한국판 수록 여부와 수치가 다를 수 있습니다.
 
 자세한 고지: [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt).
+
+스테이지 배율: 공식 안내 4,976개 스테이지 중 4,852개에 공개 게임 데이터의 출현 적 이름·체력/공격력 배율을 연결합니다. 성급 선택을 지원하며 미연결 124개는 명시합니다. 풍운 냥코탑 1~7층의 일부 배율은 나무위키 보관본과 수동 대조했고, 나머지는 미대조로 표시합니다. 상세 출처는 `docs/STAGE_SOURCES.md`와 `public/data/stage-battle-audit.json`을 확인하세요.

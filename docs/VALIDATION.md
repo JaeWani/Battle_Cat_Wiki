@@ -51,3 +51,10 @@
 - 브라우저에서 신 레전드→레전드 제로 빠른 전환 시 마지막 선택 유지, 제로 필드 및 35개 맵/205개 스테이지 표시 확인. B000은 통솔력 대신 '고양이 드링크A 3개'로 표시. S341의 이름 미기재와 이미지 미확인 상태, C000의 원문 언어 안내, 메인 계열의 미확인 설명 확인.
 - 모바일 390px iframe에서 body 375px/scrollWidth 375px로 가로 넘침 없음. 수집 현황 표만 내부 가로 스크롤. 신 레전드 고대의 저주 적 아이콘 407/406 정상 로딩. 목록 2/28 페이지 이동 확인.
 - 전체 게임 데이터 확보를 보장하지 않는다. 메인/EX/도장/미궁 등 미확인 계열과 성급별 수치·현재 개방 여부는 별도 출처가 필요하다.
+
+## Stage enemy magnifications — 2026-10-25
+
+- Node 42 tests and Python 16 tests pass; official JSON, artwork checksums, and lazy family equivalence remain valid.
+- All 4,976 published stages have a game-data outcome: 4,852 available; 87 missing source rows; 37 enemy-list mismatches. All 29,223 enemy variants reference an existing character.
+- Browser: V000 floor 2 displays Black Doge 0.4× / 40%, with reviewed wiki comparison. NA000 crown 2 changes both listed relic enemies from 1× to 1.5×. Source links and sample-only wording visible.
+- Raw official data and icons unchanged. Battle tables use existing original-game artwork assets.

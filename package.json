@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check public/js/app.mjs && node --check public/js/engine.mjs && node --check public/js/home.mjs && node --check public/js/events.mjs && node --check public/js/stages.mjs && node --check public/js/stage-guide.mjs && node scripts/validate-stages.mjs && node scripts/validate-data.mjs && node scripts/validate-events.mjs && python3 -m unittest discover -s tests -p \"*_test.py\"",
+    "check": "node --check public/js/app.mjs && node --check public/js/engine.mjs && node --check public/js/home.mjs && node --check public/js/events.mjs && node --check public/js/stages.mjs && node --check public/js/stage-guide.mjs && node --check public/js/stage-battles.mjs && node scripts/validate-stages.mjs && node scripts/validate-data.mjs && node scripts/validate-events.mjs && python3 -m unittest discover -s tests -p \"*_test.py\"",
     "assets": "node scripts/unpack-artwork.mjs && node scripts/unpack-stages.mjs",
     "events": "python3 scripts/collect-events.py",
     "stages": "python3 scripts/collect-stages.py && python3 scripts/build-stage-catalog.py"

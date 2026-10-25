@@ -1,4 +1,4 @@
-/** Category labels reference NamuWiki; gameplay facts come only from PONOS. */
+/** Category labels reference NamuWiki; official snapshot facts come from PONOS; game-file battle data is a separate layer. */
 export const CATEGORIES=[
   ['all','전체'],['main','메인 스테이지'],['legend','레전드 스토리'],
   ['true-legend','신 레전드 스토리'],['zero-legend','레전드 제로'],['special','스페셜 스테이지'],
