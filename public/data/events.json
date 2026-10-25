@@ -1,0 +1,596 @@
+{
+  "schemaVersion": 1,
+  "region": "KR",
+  "timezone": "Asia/Seoul",
+  "collectedAt": "2026-10-25T02:29:32.664546+00:00",
+  "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+  "sourceLabel": "PONOS 한국판 공식 공지",
+  "clientVersion": "150500",
+  "coverage": "공식 공지에서 확인한 대표 개최 기간과 반복 개최일. 전체 인게임 일정이나 미발표 일정은 포함하지 않습니다.",
+  "collectionErrors": [],
+  "events": [
+    {
+      "id": "14482",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14482?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "종말의 배틀 그라운드",
+      "publishedOn": "2026-10-24",
+      "category": "event",
+      "period": null,
+      "periodSource": null,
+      "recurrence": {
+        "frequency": "weekly",
+        "weekdays": [
+          0,
+          6
+        ],
+        "timeKnown": false,
+        "label": "매주 토요일 · 일요일 · 시간은 공지 확인"
+      },
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14482.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/slider/large/kr/eve_l_071_kr.png",
+        "sha256": "33a07027ca7b93741001b85a14f6c8b5cbf3c93dcbd765c47b15a2e801c63a2c",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14481",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14481?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'걸즈몬스터즈' 레어 뽑기 이벤트 개최!",
+      "publishedOn": "2026-10-23",
+      "category": "gacha",
+      "period": {
+        "startAt": "2026-10-23T11:00:00+09:00",
+        "endAt": "2026-10-26T11:00:00+09:00",
+        "announcedEndAt": "2026-10-26T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14481.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/galmon/galmon_2025_gacha01_kr.png",
+        "sha256": "57a99ea779741ae08720edd9d8c6a405fde2dc3ac5f0d596c2fe699800e6111f",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14480",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14480?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'초고대 전설의 용사 울트라 소울즈' 레어 뽑기 이벤트 개최!",
+      "publishedOn": "2026-10-23",
+      "category": "gacha",
+      "period": {
+        "startAt": "2026-10-23T11:00:00+09:00",
+        "endAt": "2026-10-26T11:00:00+09:00",
+        "announcedEndAt": "2026-10-26T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14480.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/ultrasouls/ultrasouls_2024_gacha01_kr.png",
+        "sha256": "0e28fe0332244310455f13a5cd698613aea704af2c92fd689d906f6aff315e65",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14479",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14479?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "매월 22일 한정! '냥코 냥코 기념일' 개최!",
+      "publishedOn": "2026-10-22",
+      "category": "event",
+      "period": null,
+      "periodSource": null,
+      "recurrence": {
+        "frequency": "monthly",
+        "monthDays": [
+          22
+        ],
+        "timeKnown": false,
+        "label": "매월 22일 · 시간은 공지 확인"
+      },
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14479.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/slider/large/kr/eve_l_032_kr.png",
+        "sha256": "1e2df5b5f1dcdba18b03f916924109c259e9ea944a81eb9a9c5147f7066cc143",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14478",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14478?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "수요 냥코 데이",
+      "publishedOn": "2026-10-21",
+      "category": "event",
+      "period": null,
+      "periodSource": null,
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14478.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/slider/large/kr/eve_l_188_kr.png",
+        "sha256": "205f22940b9862a0da220cb8acb34165cd11c78e6aa59eb7f8721dbeb3b9a8e5",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14475",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14475?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'하이퍼 고양이 축제' 레어 뽑기 이벤트 개최!",
+      "publishedOn": "2026-10-20",
+      "category": "gacha",
+      "period": {
+        "startAt": "2026-10-20T11:00:00+09:00",
+        "endAt": "2026-10-26T11:00:00+09:00",
+        "announcedEndAt": "2026-10-26T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14475.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/gokuneko/gokuneko_2026_gacha01_kr.png",
+        "sha256": "90f6a5008745885881ec8b9ce46f597bedd8795d22f8d7572520d54babfc4625",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14477",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14477?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'다크 히어로즈' 레어 뽑기 이벤트 개최!",
+      "publishedOn": "2026-10-20",
+      "category": "gacha",
+      "period": {
+        "startAt": "2026-10-20T11:00:00+09:00",
+        "endAt": "2026-10-23T11:00:00+09:00",
+        "announcedEndAt": "2026-10-23T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14477.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/darkhero/darkhero_2024_gacha01_kr.png",
+        "sha256": "3d4b6bea5d3cf8c2801a2782acaf7b23eec3fdb98a0003a20e809848b06d3d9f",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14476",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14476?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'대정령 엘레멘탈 픽시즈' 레어 뽑기 이벤트 개최!",
+      "publishedOn": "2026-10-20",
+      "category": "gacha",
+      "period": {
+        "startAt": "2026-10-20T11:00:00+09:00",
+        "endAt": "2026-10-23T11:00:00+09:00",
+        "announcedEndAt": "2026-10-23T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14476.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/elemental/elemental_2025_gacha01_kr.png",
+        "sha256": "bfb7169a4f96f27bedc75f27156a264fc0d988690d0b60a2848004947f2e466f",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14474",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14474?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "초생명체 '대천사 엑스엘' 강습 개최!",
+      "publishedOn": "2026-10-19",
+      "category": "event",
+      "period": {
+        "startAt": "2026-10-19T11:00:00+09:00",
+        "endAt": "2026-10-26T11:00:00+09:00",
+        "announcedEndAt": "2026-10-26T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14474.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/slider/large/kr/eve_l_112_kr.png",
+        "sha256": "6bf5cbe7fbd352af4423f25f5aa73fac76197e56c72b681bf1bb6e8e781e4a8d",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14458",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14458?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'초환수 바사라즈' 레어 뽑기 이벤트 개최!",
+      "publishedOn": "2026-10-18",
+      "category": "gacha",
+      "period": {
+        "startAt": "2026-10-18T11:00:00+09:00",
+        "endAt": "2026-10-20T11:00:00+09:00",
+        "announcedEndAt": "2026-10-20T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14458.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/sengoku/sengoku_2026_gacha01_kr.png",
+        "sha256": "c5b536ff4c2a7a5145e21b2fb50ce6583d7dda42f91e4be547ff6d36fd3ceb4a",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14457",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14457?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'사이버 학원 갤럭시 걸즈' 레어 뽑기 이벤트 개최!",
+      "publishedOn": "2026-10-18",
+      "category": "gacha",
+      "period": {
+        "startAt": "2026-10-18T11:00:00+09:00",
+        "endAt": "2026-10-20T11:00:00+09:00",
+        "announcedEndAt": "2026-10-20T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14457.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/galaxygals/galaxygals_2025_gacha01_kr.png",
+        "sha256": "54827d00660745e43e6f3287d043aadb6bc70207462a4764a8efa421548340cd",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14437",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14437?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "속편・10월 강습!",
+      "publishedOn": "2026-10-16",
+      "category": "event",
+      "period": null,
+      "periodSource": null,
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14437.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/slider/large/kr/eve_l_085_kr.png",
+        "sha256": "922c1a8dd89e1dfddd28de20f8ecca9b6a12515dca742beac1fa2ab2e05ef82a",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14436",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14436?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'한밤중의 대운동회' 속편・10월 이벤트",
+      "publishedOn": "2026-10-16",
+      "category": "event",
+      "period": null,
+      "periodSource": null,
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14436.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/slider/large/kr/eve_l_022_kr.png",
+        "sha256": "32dd897c2c49672d5e3c552c3742723ad56b3187c21cfdfa1044d36fd16a049c",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14502",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14502?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'울트라 슈퍼 레어 확정' 이벤트!",
+      "publishedOn": "2026-10-16",
+      "category": "event",
+      "period": null,
+      "periodSource": null,
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14502.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/slider/large/kr/eve_l_037_kr.png",
+        "sha256": "73f42d47e9b706347d078ec6c7e797169c07f50b9f31819e4ca714679664c574",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14434",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14434?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'아이언 워즈' 레어 뽑기 이벤트 개최!",
+      "publishedOn": "2026-10-16",
+      "category": "gacha",
+      "period": {
+        "startAt": "2026-10-16T11:00:00+09:00",
+        "endAt": "2026-10-18T11:00:00+09:00",
+        "announcedEndAt": "2026-10-18T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14434.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/iron/iron_2025_gacha01_kr.png",
+        "sha256": "4fbc6b09f07728cb3de7fad3b80ef2bcf9630e64431d7229678a96aadfb10ba7",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14433",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14433?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'전설의 고양이 루가족' 레어 뽑기 이벤트 개최!",
+      "publishedOn": "2026-10-16",
+      "category": "gacha",
+      "period": {
+        "startAt": "2026-10-16T11:00:00+09:00",
+        "endAt": "2026-10-18T11:00:00+09:00",
+        "announcedEndAt": "2026-10-18T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14433.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/nekoruga/nekoruga_2025_gacha01_kr.png",
+        "sha256": "41ffb8cd4d9bf6f61761ef7a24ccb41f72c73a25ae43c4d2ca35a0efbd87684d",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14432",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14432?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'다이너마이트 군단' 레어 뽑기 이벤트 개최!",
+      "publishedOn": "2026-10-16",
+      "category": "gacha",
+      "period": {
+        "startAt": "2026-10-16T11:00:00+09:00",
+        "endAt": "2026-10-20T11:00:00+09:00",
+        "announcedEndAt": "2026-10-20T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14432.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/dynamites/dynamites_2026_gacha01_kr.png",
+        "sha256": "3f0b29fb722c2eb56bd5c9ad98469413524579b8dc50de560106be8e3789691a",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14431",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14431?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "수요 냥코 데이",
+      "publishedOn": "2026-10-14",
+      "category": "event",
+      "period": null,
+      "periodSource": null,
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14431.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/slider/large/kr/eve_l_188_kr.png",
+        "sha256": "205f22940b9862a0da220cb8acb34165cd11c78e6aa59eb7f8721dbeb3b9a8e5",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14430",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14430?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'초파괴 대제 드래곤 엠퍼러스' 레어 뽑기 이벤트 개최!",
+      "publishedOn": "2026-10-13",
+      "category": "gacha",
+      "period": {
+        "startAt": "2026-10-13T11:00:00+09:00",
+        "endAt": "2026-10-16T11:00:00+09:00",
+        "announcedEndAt": "2026-10-16T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14430.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/dragon/dragon_2026_gacha01_kr.png",
+        "sha256": "e628c7381daa2cb351c91c4806c8995078c6158b5558742e536225151528a6cf",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14428",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14428?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'꼬꼬미 뮤직 페스티벌' 개최!",
+      "publishedOn": null,
+      "category": "event",
+      "period": {
+        "startAt": "2026-10-12T11:00:00+09:00",
+        "endAt": "2026-10-26T11:00:00+09:00",
+        "announcedEndAt": "2026-10-26T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14428.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/ongakusai/ongakusai_2026_img01_kr.png",
+        "sha256": "1c468915a6b327f190a1fae5a2559a6aed9ef8794355a352a3c0822ff1bbfc31",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14358",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14358?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "1억 2000만 다운로드 돌파 기념 이벤트 제2탄 개최!",
+      "publishedOn": null,
+      "category": "event",
+      "period": {
+        "startAt": "2026-10-05T11:00:00+09:00",
+        "endAt": "2026-10-29T11:00:00+09:00",
+        "announcedEndAt": "2026-10-29T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14358.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/12000dl/12000dl_img02a_kr.png",
+        "sha256": "39ab25d2112fcc6fdb3eaf343e69c452b33ecfc87308c1f0cd02a2f7e837baef",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14355",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14355?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "실버위크 이벤트 개최!!",
+      "publishedOn": null,
+      "category": "event",
+      "period": {
+        "startAt": "2026-10-09T11:00:00+09:00",
+        "endAt": "2026-10-26T11:00:00+09:00",
+        "announcedEndAt": "2026-10-26T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14355.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/event/silverweek/silverweek_2026_img01_kr.png",
+        "sha256": "f63dbe36924311891c8d8d3daf152c7c95e3448dd2c9baa60008c17e94561372",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14349",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14349?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "울트라 랭킹의 방 개최!",
+      "publishedOn": null,
+      "category": "event",
+      "period": {
+        "startAt": "2026-10-05T11:00:00+09:00",
+        "endAt": "2026-10-29T11:00:00+09:00",
+        "announcedEndAt": "2026-10-29T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14349.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/slider/large/kr/eve_l_159_kr.png",
+        "sha256": "73c93972335fb18d505a9aca6f02d3ee53017a03e5cf9f9a93c4b0788df5c7a6",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14348",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14348?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "풍운 냥코탑",
+      "publishedOn": null,
+      "category": "event",
+      "period": {
+        "startAt": "2026-10-05T11:00:00+09:00",
+        "endAt": "2026-10-29T11:00:00+09:00",
+        "announcedEndAt": "2026-10-29T10:59:00+09:00"
+      },
+      "periodSource": "공식 공지 개최 기간",
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14348.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/slider/large/kr/eve_l_026_1_kr.png",
+        "sha256": "1504d21678e0d6e13f3b37b943f45aa6b64f933be653bf083f802e6ebd357c83",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    },
+    {
+      "id": "14312",
+      "sourceUrl": "https://nyanko-announcement.ponosgames.com/v1/notices/14312?platform=google&clientVersion=150500&countryCode=ko&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=1792895372&timeDifference=1",
+      "title": "'가을은 역시 운동회지!' 10월 이벤트",
+      "publishedOn": null,
+      "category": "event",
+      "period": null,
+      "periodSource": null,
+      "recurrence": null,
+      "source": "PONOS 한국판 공식 공지",
+      "region": "KR",
+      "verifiedAt": "2026-10-25T02:29:32.664546+00:00",
+      "image": {
+        "path": "event-assets/notice-14312.png",
+        "sourceUrl": "https://nyanko-webview.ponosgames.com/information/img/battlecats/slider/large/kr/eve_l_010_kr.png",
+        "sha256": "11affbeaa36fb1a1c1e9462fcd24a9a6bef384ac3eeb4ff8f5a2855016a72a0b",
+        "copyright": "© PONOS Corp. 및 각 권리자",
+        "processing": "none"
+      }
+    }
+  ]
+}

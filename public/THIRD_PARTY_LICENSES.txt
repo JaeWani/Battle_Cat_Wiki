@@ -29,3 +29,8 @@ Game artwork: © PONOS Corp. and respective collaboration rights holders.
 Community archive: https://github.com/battlecatsinfo/img
 Commit: 5e5ca755b9ed44906b0e9b335b5a8ac20068c1b5
 Artwork is not relicensed under the software MIT license. This is an unofficial fan tool, not endorsed by PONOS. The archive is not an official PONOS distribution channel; no explicit commercial artwork license is asserted.
+
+Official KR event metadata and unmodified notice banners: PONOS Corp.
+Source: https://nyanko-announcement.ponosgames.com/v1/notices (countryCode=ko)
+Original banners: https://nyanko-webview.ponosgames.com/
+Only short notice titles, explicit event periods, publication dates, and original banners are stored. No full article copies. Banner copyright is not covered by the MIT software license.

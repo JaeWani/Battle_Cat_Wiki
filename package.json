@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check public/js/app.mjs && node --check public/js/engine.mjs && node scripts/validate-data.mjs",
-    "assets": "node scripts/unpack-artwork.mjs"
+    "check": "node --check public/js/app.mjs && node --check public/js/engine.mjs && node --check public/js/home.mjs && node --check public/js/events.mjs && node scripts/validate-data.mjs && node scripts/validate-events.mjs && python3 -m unittest discover -s tests -p \"*_test.py\"",
+    "assets": "node scripts/unpack-artwork.mjs",
+    "events": "python3 scripts/collect-events.py"
   }
 }

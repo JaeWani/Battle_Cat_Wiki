@@ -1,3 +1,4 @@
+import {initHome} from './home.mjs';
 import {calculate,statsAt,searchUnits,TRAITS,RARITIES,ABILITIES} from './engine.mjs';
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(n,d=0)=>Number.isFinite(n)?n.toLocaleString('ko-KR',{maximumFractionDigits:d}):'불가';
@@ -138,14 +139,15 @@ function openDetail(key,kind){
   detail={u,kind,value:kind==='cat'?Math.min(state.level,u.maxLevel):state.mag};renderDetail();$('#detail-dialog').showModal();
 }
 function setView(view,updateHash=true){
-  if(!['calculator','cats','enemies','about'].includes(view))view='calculator';
+  if(!['home','calculator','cats','enemies','about'].includes(view))view='home';
+  $('#home-view').hidden=view!=='home';
   $('#calculator-view').hidden=view!=='calculator';$('#catalog-view').hidden=!['cats','enemies'].includes(view);$('#about-view').hidden=view!=='about';
   for(const button of document.querySelectorAll('.nav-button')){button.classList.toggle('active',button.dataset.view===view);if(button.dataset.view===view)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
   if(view==='cats'||view==='enemies'){
     if(catalog.kind!==view){catalog.kind=view;Object.assign(catalog,{query:'',trait:0,rarity:'all',page:1});$('#catalog-search').value='';$('#catalog-rarity').value='all';}
     renderCatalog();
   }
-  document.title=`${{calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내'}[view]} · 냥코 연구소`;
+  document.title=`${{home:'이벤트 일정',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내'}[view]} · 냥코 연구소`;
   if(updateHash&&location.hash!==`#${view}`)history.replaceState(null,'',`#${view}`);
 }
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2500);}
@@ -210,7 +212,8 @@ async function init(){
     $('#explore-enemies').innerHTML=[0,4,17,24,32].map(id=>{const u=enemies.find(e=>e.id===id);return `<button class="explore-card" data-detail="${u.key}" data-kind="enemy">${image(u)}<span>${esc(u.name)}</span></button>`;}).join('');
     $('#footer-version').textContent=`JP ${meta.japanVersion} · 아군 ${meta.catCount}종 / 적군 ${meta.enemyCount}종 · 한국판과 차이가 있을 수 있습니다.`;
     $('#data-meta').innerHTML=`<dl><dt>아군</dt><dd>${meta.catCount}종 · ${fmt(meta.formCount)}개 진화 형태</dd><dt>적군</dt><dd>${meta.enemyCount}종</dd><dt>기준 버전</dt><dd>일본판 ${meta.japanVersion} / 대만판 ${meta.taiwanVersion}</dd><dt>수집일</dt><dd>${new Date(meta.importedAt).toLocaleDateString('ko-KR',{timeZone:'Asia/Seoul'})}</dd><dt>데이터 커밋</dt><dd>${esc(meta.commit.slice(0,12))}</dd></dl>`;
-    setView(location.hash.slice(1)||'calculator',false);$('#loading').hidden=true;
+    setView(location.hash.slice(1)||'home',false);$('#loading').hidden=true;
   }catch(error){$('#loading').textContent=`데이터를 불러오지 못했어요. 연결 상태를 확인한 뒤 새로고침해 주세요. (${error.message})`;$('#loading').classList.add('error');console.error(error);}
 }
+initHome();
 init();

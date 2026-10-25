@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
 permissions:
   contents: read
 concurrency:
@@ -16,6 +18,9 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
+      - name: Collect current Korean official event notices
+        continue-on-error: true
+        run: python3 scripts/collect-events.py
       - name: Restore byte-identical game artwork
         run: npm run assets
       - name: Test calculation engine
