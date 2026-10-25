@@ -34,3 +34,15 @@ Official KR event metadata and unmodified notice banners: PONOS Corp.
 Source: https://nyanko-announcement.ponosgames.com/v1/notices (countryCode=ko)
 Original banners: https://nyanko-webview.ponosgames.com/
 Only short notice titles, explicit event periods, publication dates, and original banners are stored. No full article copies. Banner copyright is not covered by the MIT software license.
+
+Official KR stage metadata and unmodified enemy icons: PONOS Corp.
+Sources: https://ponosgames.com/information/appli/battlecats/stage/kr/
+Per-map URLs and per-image SHA-256 values are included in data/stages.json.
+Only displayed stage names, energy, difficulty, reward facts and distinct enemy icon references are collected. No full stage HTML or game scripts are redistributed. Image rights remain with PONOS Corp. and respective rights holders.
+
+Stage category names reference the organization of NamuWiki's
+냥코 대전쟁/스테이지 and 냥코 대전쟁/스페셜 스테이지, with a simplified navigation grouping:
+https://namu.wiki/w/냥코%20대전쟁/스테이지
+https://namu.wiki/w/냥코%20대전쟁/스페셜%20스테이지
+No NamuWiki article text, tables, gameplay statistics or artwork are copied.
+See docs/STAGE_SOURCES.md for reference access and coverage details.

@@ -1,3 +1,4 @@
+import {initStages} from './stage-guide.mjs';
 import {initHome} from './home.mjs';
 import {calculate,statsAt,searchUnits,TRAITS,RARITIES,ABILITIES} from './engine.mjs';
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -139,15 +140,15 @@ function openDetail(key,kind){
   detail={u,kind,value:kind==='cat'?Math.min(state.level,u.maxLevel):state.mag};renderDetail();$('#detail-dialog').showModal();
 }
 function setView(view,updateHash=true){
-  if(!['home','calculator','cats','enemies','about'].includes(view))view='home';
-  $('#home-view').hidden=view!=='home';
+  if(!['home','stages','calculator','cats','enemies','about'].includes(view))view='home';
+  $('#home-view').hidden=view!=='home';$('#stages-view').hidden=view!=='stages';
   $('#calculator-view').hidden=view!=='calculator';$('#catalog-view').hidden=!['cats','enemies'].includes(view);$('#about-view').hidden=view!=='about';
   for(const button of document.querySelectorAll('.nav-button')){button.classList.toggle('active',button.dataset.view===view);if(button.dataset.view===view)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
   if(view==='cats'||view==='enemies'){
     if(catalog.kind!==view){catalog.kind=view;Object.assign(catalog,{query:'',trait:0,rarity:'all',page:1});$('#catalog-search').value='';$('#catalog-rarity').value='all';}
     renderCatalog();
   }
-  document.title=`${{home:'이벤트 일정',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내'}[view]} · 냥코 연구소`;
+  document.title=`${{home:'이벤트 일정',stages:'스테이지 정보',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내'}[view]} · 냥코 연구소`;
   if(updateHash&&location.hash!==`#${view}`)history.replaceState(null,'',`#${view}`);
 }
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2500);}
@@ -216,4 +217,5 @@ async function init(){
   }catch(error){$('#loading').textContent=`데이터를 불러오지 못했어요. 연결 상태를 확인한 뒤 새로고침해 주세요. (${error.message})`;$('#loading').classList.add('error');console.error(error);}
 }
 initHome();
+initStages();
 init();
