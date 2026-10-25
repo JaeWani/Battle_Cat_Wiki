@@ -1,0 +1,11 @@
+{
+  "name": "battle-cat-wiki",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check public/js/app.mjs && node --check public/js/engine.mjs && node scripts/validate-data.mjs",
+    "assets": "node scripts/unpack-artwork.mjs"
+  }
+}

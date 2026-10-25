@@ -1,0 +1,6 @@
+node_modules/
+.openai/
+.DS_Store
+__pycache__/
+*.log
+public/assets/
