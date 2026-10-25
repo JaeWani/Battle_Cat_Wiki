@@ -23,6 +23,17 @@ class OfficialStageTests(unittest.TestCase):
         s=self.parse()['stages'][0]
         self.assertEqual(s['energy'],200);self.assertEqual(s['difficulty'],'★10')
         self.assertEqual(s['rewards'],'레어 티켓 1장')
+    def test_catamin_resource_is_not_fabricated_as_energy(self):
+        s=self.parse(HTML.replace('필요 통솔력</th><td>200','필요 고양이 드링크</th><td>고양이 드링크A 3개'))['stages'][0]
+        self.assertIsNone(s['energy']);self.assertEqual(s['costLabel'],'필요 고양이 드링크');self.assertEqual(s['costText'],'고양이 드링크A 3개')
+    def test_untranslated_official_names_do_not_claim_korean_release(self):
+        m=self.parse(HTML.replace('공식 맵','原文マップ').replace('첫 스테이지','第一ステージ'))
+        self.assertFalse(m['koreanTextVerified'])
+    def test_empty_map_and_placeholder_are_not_published_as_game_maps(self):
+        for name in ['', 'ダミー']:
+            with self.assertRaises(ValueError):self.parse(HTML.replace('공식 맵',name))
+        s=self.parse(HTML.replace('첫 스테이지',''))['stages'][0]
+        self.assertEqual(s['name'],'');self.assertFalse(s['namePublished'])
     def test_hidden_stage_metadata_is_preserved_but_unknown_list_not_fabricated(self):
         s=self.parse(HTML.replace('stage0_enemy_list_1','unpublished'))['stages'][0]
         self.assertEqual(s['name'],'첫 스테이지');self.assertFalse(s['enemyListPublished']);self.assertEqual(s['enemies'],[])
