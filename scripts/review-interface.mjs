@@ -72,6 +72,31 @@ try{
  await evaluate("document.querySelector('#my-import-dialog [data-profile=close-import]').click()");
  console.log('Verified browser file input, module worker, preview values, no unconfirmed persistence, and invalid-file rejection with synthetic data.');
 
+ // Exercise manual editing through the real form, including filters and unknown talent levels.
+ for(const width of [1440,390]){
+  await command('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<600},sessionId);
+  await evaluate("document.querySelector('[data-profile=manual]').click()");
+  for(let i=0;i<60;i++){if(await evaluate("document.querySelector('#my-editor-dialog').open"))break;await new Promise(r=>setTimeout(r,100));}
+  assert.ok(await evaluate("document.querySelector('#my-editor-dialog').open"),'Manual editor did not open');
+  assert.ok((await evaluate("document.querySelector('#my-editor-count').innerText")).includes('882'),'Incomplete character catalog');
+  await evaluate("(()=>{const c=document.querySelector('[data-edit-cat=\"9\"] [data-cat-field=owned]');c.checked=true;c.dispatchEvent(new Event('change',{bubbles:true}));})()");
+  await evaluate("(()=>{const i=document.querySelector('[data-edit-cat=\"9\"] [data-cat-field=level]');i.value='45';i.dispatchEvent(new Event('input',{bubbles:true}));const t=document.querySelector('[data-edit-cat=\"9\"] [data-talent-id]');t.value='4';t.dispatchEvent(new Event('change',{bubbles:true}));})()");
+  await evaluate("(()=>{const i=document.querySelector('#my-editor-search');i.value='NO MATCH';i.dispatchEvent(new Event('input',{bubbles:true}));i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));})()");
+  assert.equal(await evaluate("document.querySelector('[data-edit-cat=\"9\"] [data-cat-field=level]').value"),'45','Filtering lost a draft level');
+  assert.equal(await evaluate("document.querySelector('[data-edit-cat=\"9\"] [data-talent-id]').value"),'4','Filtering lost a talent selection');
+  assert.ok(await evaluate("document.querySelector('#my-editor-save').disabled"),'Consent gate missing');
+  const overflow=await evaluate("(()=>{const d=document.querySelector('#my-editor-dialog');return d.scrollWidth>d.clientWidth+1;})()");
+  assert.equal(overflow,false,'Manual editor has horizontal overflow');
+  await evaluate("(()=>{const i=document.querySelector('#my-editor-owned');i.value='owned';i.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('[data-edit-cat=\"9\"] details').open=true;})()");
+  const shot=await command('Page.captureScreenshot',{format:'png',captureBeyondViewport:false,fromSurface:true},sessionId);
+  await writeFile(path.join(out,'manual-editor-'+width+'.png'),Buffer.from(shot.data,'base64'));
+  // Cancel remains a draft-only action; discard via native dialog confirmation.
+  const closing=evaluate("document.querySelector('[data-manual=close]').click();true");
+  await new Promise(r=>setTimeout(r,100));
+  const jsDialog=await command('Page.handleJavaScriptDialog',{accept:true},sessionId);void jsDialog;await closing;
+  assert.equal(await evaluate("document.querySelectorAll('#my-inventory .my-cat').length"),0,'Manual draft persisted without account save');
+ }
+ console.log('Verified manual editor at desktop/mobile widths: full catalog, ownership, levels, talents, filter retention, consent and cancellation.');
  await command('Target.closeTarget',{targetId});
  assert.ok(report.every(r=>r.issues.length===0),'Interface layout failures; inspect interface-review/report.json');
 }catch(error){fatal=error;}
