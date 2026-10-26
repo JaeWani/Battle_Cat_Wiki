@@ -65,7 +65,7 @@ def period(text):
 
 def collect():
     now=datetime.now(timezone.utc)
-    params={'platform':'google','clientVersion':VERSION,'countryCode':'ko','clearedStageJapan':'300','clearedStageFuture':'300','clearedUniverse':'300','clientTime':str(int(now.timestamp())),'timeDifference':'1'}
+    params={'platform':'google','clientVersion':VERSION,'countryCode':'ko','clearedStageJapan':'300','clearedStageFuture':'300','clearedUniverse':'300'}
     base_url=BASE+'?'+urllib.parse.urlencode(params)
     candidates={}
     # Two recent notice pages plus the official index's featured notices.

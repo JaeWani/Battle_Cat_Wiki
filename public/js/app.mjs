@@ -1,5 +1,5 @@
-import {initStages} from './stage-guide.mjs';
-import {initHome} from './home.mjs';
+import {initStages} from './stage-guide.mjs?v=notice-links-1';
+import {initHome} from './home.mjs?v=notice-links-1';
 import {calculate,statsAt,searchUnits,TRAITS,RARITIES,ABILITIES} from './engine.mjs';
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(n,d=0)=>Number.isFinite(n)?n.toLocaleString('ko-KR',{maximumFractionDigits:d}):'불가';

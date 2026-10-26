@@ -1,3 +1,4 @@
+import {publicNoticeURL} from './notice-links.mjs';
 import {kstDay,shiftDay,onDay,eventStatus,isStale,filterEvents} from './events.mjs';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const labels={gacha:'뽑기',event:'이벤트',reward:'보상'};
@@ -7,7 +8,7 @@ let data=null;
 const date=(v,options={})=>new Date(v).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',...options});
 const shortDay=day=>date(`${day}T12:00:00+09:00`,{month:'long',day:'numeric',weekday:'long'});
 const clock=v=>date(v,{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false});
-const safeURL=url=>{try{const u=new URL(url);return u.protocol==='https:'&&['nyanko-announcement.ponosgames.com','battlecats.club'].includes(u.hostname)?u.href:'https://battlecats.club/kr/';}catch{return 'https://battlecats.club/kr/';}};
+const safeURL=url=>{try{const u=new URL(url);return u.protocol==='https:'&&['nyanko-announcement.ponosgames.com','battlecats.club'].includes(u.hostname)?publicNoticeURL(u.href):'https://battlecats.club/kr/';}catch{return 'https://battlecats.club/kr/';}};
 function periodText(e){return e.period?`${clock(e.period.startAt)} ~ ${clock(e.period.announcedEndAt)}`:e.recurrence?.label||'개최 기간은 원문 확인';}
 function endingLabel(e,now){
   if(!e.period)return '';

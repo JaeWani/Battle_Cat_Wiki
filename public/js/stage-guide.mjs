@@ -1,3 +1,4 @@
+import {publicNoticeURL} from './notice-links.mjs';
 import {effectiveMagnification,wikiComparison} from './stage-battles.mjs';
 import {CATEGORIES,SPECIALS,FAMILY_NAMES,familyOf,categoryOf,specialOf,filterMaps,schedulesFor,hydrateStageGroup} from './stages.mjs';
 import {eventStatus,isStale} from './events.mjs';
@@ -8,7 +9,7 @@ const fullMaps=new Map(),pendingGroups=new Map(),battleMaps=new Map();
 let enemyCatalog=new Map(),wikiChecks={stages:[]},battleAudit;
 const MAP_PAGE_SIZE=36;
 const label=(list,key)=>list.find(([id])=>id===key)?.[1]||'미분류';
-function officialLink(url,text){return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${text} ↗</a>`;}
+function officialLink(url,text){return `<a href="${esc(publicNoticeURL(url))}" target="_blank" rel="noopener noreferrer">${text} ↗</a>`;}
 function renderSchedules(map){
   const matched=schedulesFor(map,events.events);
   return `<section class="stage-schedule"><div class="stage-section-heading"><h3>열리는 날짜</h3><span>맵 전체 개최 일정 · KST</span></div>${matched.length?matched.map(e=>{

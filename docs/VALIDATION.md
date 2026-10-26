@@ -58,3 +58,7 @@
 - All 4,976 published stages have a game-data outcome: 4,852 available; 87 missing source rows; 37 enemy-list mismatches. All 29,223 enemy variants reference an existing character.
 - Browser: V000 floor 2 displays Black Doge 0.4× / 40%, with reviewed wiki comparison. NA000 crown 2 changes both listed relic enemies from 1× to 1.5×. Source links and sample-only wording visible.
 - Raw official data and icons unchanged. Battle tables use existing original-game artwork assets.
+
+## Public notice link time error — 2026-10-26
+
+PONOS detail 14474 returns the normal Korean event content without `clientTime` / `timeDifference`, verified by HTTP response and browser. Public links now omit those ephemeral device-time parameters while preserving notice ID, Korean locale, version and progress context. Shared normalization covers event banners, titles, source/index links, news cards and stage schedule links. Collector URLs omit device-time fields for future snapshots. Existing snapshots remain compatible through frontend normalization. Regression tests cover stale timestamps, index links, retained parameters, idempotency and unrelated hosts. App/module version URLs refresh cached code.
