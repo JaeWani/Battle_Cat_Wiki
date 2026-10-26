@@ -53,7 +53,7 @@ function render(){
   $('#home-notices').innerHTML=notices.length?notices.map(e=>`<a class="news-item" href="${esc(safeURL(e.sourceUrl))}" target="_blank" rel="noopener noreferrer"><small>${e.publishedOn?esc(e.publishedOn.replaceAll('-','.')):'공식 소식'}</small><strong>${esc(e.title)}</strong><span>기간은 원문 확인 ↗</span></a>`).join(''):'<p class="field-help">개최 기간이 확인된 공지는 왼쪽 일정에 표시했어요.</p>';
   const feature=ongoing.find(e=>e.category==='event'&&e.image)||ongoing.find(e=>e.image);
   $('#home-feature').hidden=!feature;
-  if(feature)$('#home-feature').innerHTML=`<a href="${esc(safeURL(feature.sourceUrl))}" target="_blank" rel="noopener noreferrer"><div class="feature-caption"><span class="event-category">지금 주목할 이벤트</span><span>${endingLabel(feature,now)} ↗</span></div><img src="${esc(feature.image.path)}" alt="${esc(feature.title)} 공식 배너"><div class="feature-title">${esc(feature.title)}</div><p>${esc(periodText(feature))}</p></a>`;
+  if(feature)$('#home-feature').innerHTML=`<a href="${esc(safeURL(feature.sourceUrl))}" target="_blank" rel="noopener noreferrer"><div class="feature-caption"><span class="event-category">진행 중 이벤트</span><span>${endingLabel(feature,now)} ↗</span></div><img src="${esc(feature.image.path)}" alt="${esc(feature.title)} 공식 배너"><div class="feature-title">${esc(feature.title)}</div><p>${esc(periodText(feature))}</p></a>`;
   $('#home-loading').hidden=true;
 }
 export async function initHome(){

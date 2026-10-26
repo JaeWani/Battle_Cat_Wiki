@@ -1,8 +1,8 @@
-import {initProfile,updateProfileCatalog} from './profile.mjs?v=profile-1';
-import {initCommunity,renderCharacterCommunity} from './community.mjs?v=profile-1';
+import {initProfile,updateProfileCatalog} from './profile.mjs?v=command-1';
+import {initCommunity,renderCharacterCommunity} from './community.mjs?v=command-1';
 import {characterKey} from './community-model.mjs?v=google-only-1';
 import {initStages} from './stage-guide.mjs?v=notice-links-1';
-import {initHome} from './home.mjs?v=notice-links-1';
+import {initHome} from './home.mjs?v=command-1';
 import {calculate,statsAt,searchUnits,TRAITS,RARITIES,ABILITIES} from './engine.mjs';
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(n,d=0)=>Number.isFinite(n)?n.toLocaleString('ko-KR',{maximumFractionDigits:d}):'불가';
@@ -92,7 +92,7 @@ function renderCatalog(){
   const filtered=searchUnits(units,catalog.query,catalog.trait,kind==='cat'?catalog.rarity:'all');
   const pages=Math.ceil(filtered.length/PAGE_SIZE);catalog.page=Math.max(1,Math.min(catalog.page,pages||1));
   $('#catalog-title').textContent=kind==='cat'?'아군 도감':'적군 도감';
-  $('#catalog-description').textContent=kind==='cat'?`${meta.catCount}종의 냥코, ${meta.formCount.toLocaleString()}개 진화 형태. 나만의 다음 주력 캐릭터를 찾아보세요.`:`${meta.enemyCount}종의 적. 이미지와 이름으로 찾고, 속성별로 비교해 보세요.`;
+  $('#catalog-description').textContent=kind==='cat'?`${meta.catCount}종 · ${meta.formCount.toLocaleString()}개 진화 형태`:`${meta.enemyCount}종`;
   $('#rarity-wrap').hidden=kind==='enemy';
   $('#catalog-filters').innerHTML=filters('catalog',kind);
   $('#catalog-filters').setAttribute('aria-label',kind==='cat'?'공격 대상 속성 필터':'적 속성 필터');
@@ -153,6 +153,7 @@ function setView(view,updateHash=true){
     renderCatalog();
   }
   document.title=`${{home:'이벤트 일정',stages:'스테이지 정보',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내',community:'게시판',profile:'내 정보'}[view]} · 냥코 작전 사령부`;
+  if($('#workspace-title'))$('#workspace-title').textContent={home:'이벤트 일정',stages:'스테이지',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내',community:'게시판',profile:'내 정보'}[view];
   if(updateHash&&location.hash!==`#${view}`)history.replaceState(null,'',`#${view}`);
 }
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2500);}

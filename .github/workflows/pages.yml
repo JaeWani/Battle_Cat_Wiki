@@ -29,6 +29,15 @@ jobs:
         run: npm run check
       - name: Verify live community API and authentication boundaries
         run: npm run check:community
+      - name: Review desktop and mobile interface layouts
+        run: node scripts/review-interface.mjs
+      - name: Save interface review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: interface-review
+          path: artifacts/interface-review
+          retention-days: 3
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:

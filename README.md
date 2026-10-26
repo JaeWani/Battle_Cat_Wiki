@@ -119,3 +119,9 @@ https://jaewani.github.io/Neko_Operations_Command/#profile
 내 정보 탭, 예시 보유 캐릭터/진행 화면, 검색·희귀도 필터, 빈 화면 전환과 데이터 가져오기 디자인을 제공합니다. 예시 값은 명시적으로 표시하고 저장하지 않습니다. 실제 SAVE_DATA 해석·업로드·게임 정보 DB 저장은 아직 연결하지 않았습니다. 캐릭터 아트는 기존 게임 원본 자산만 사용합니다. 로그인한 닉네임과 게시글 활동은 기존 회원 세션과 연결합니다.
 
 저장소 변경에 맞춰 GitHub Pages는 Neko_Operations_Command 경로에 배포합니다. Supabase Auth의 Site URL 및 Redirect URLs에도 새 경로를 등록해야 합니다. Google OAuth의 JavaScript 원본(https://jaewani.github.io)과 Supabase 인증 콜백 주소 자체는 저장소 이름 변경의 영향을 받지 않습니다.
+
+## Command interface redesign
+
+Desktop uses fixed navy navigation, a teal action color and a neutral work area. Mobile uses a compact horizontal navigation bar. Promotional hero copy is replaced by functional page labels; explanatory calculation, provenance and privacy text is retained. Official artwork remains unchanged. The profile import panel is a design preview; save parsing remains unimplemented.
+
+CI runs real headless Chrome through the DevTools protocol without extra npm dependencies to check active routes and viewport overflow, and stores desktop/mobile screenshots in the interface-review artifact. These checks do not sign in or send messages.
