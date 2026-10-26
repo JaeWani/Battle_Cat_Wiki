@@ -36,7 +36,7 @@ try{
   await command('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/#'+view},sessionId);
   let ready=false;const limit=Date.now()+20000;
   while(Date.now()<limit){
-   ready=await evaluate("document.querySelector('#footer-version')?.textContent.startsWith('JP ') && [...document.querySelectorAll('.nav-button')].some(e=>e.dataset.view==="+JSON.stringify(view)+" && e.getAttribute('aria-current')==='page') && getComputedStyle(document.querySelector('.site-header')).backgroundColor==='rgb(17, 30, 48)'");
+   ready=await evaluate("document.querySelector('#footer-version')?.textContent.startsWith('JP ') && ("+JSON.stringify(view)+"==='about' || [...document.querySelectorAll('.nav-button')].some(e=>e.dataset.view==="+JSON.stringify(view)+" && e.getAttribute('aria-current')==='page')) && getComputedStyle(document.querySelector('.site-header')).backgroundColor==='rgb(17, 30, 48)'");
    if(ready)break;await new Promise(r=>setTimeout(r,200));
   }
   await new Promise(r=>setTimeout(r,350));
