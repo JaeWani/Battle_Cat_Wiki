@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "gameVersion": 150500,
+  "region": "kr",
+  "cats": [
+    {
+      "id": 0,
+      "form": 1,
+      "level": 20,
+      "plus": 15
+    },
+    {
+      "id": 25,
+      "form": 2,
+      "level": 30,
+      "plus": 0
+    }
+  ],
+  "progress": [
+    {
+      "progress": 48,
+      "cleared": 48,
+      "gold": 48
+    },
+    {
+      "progress": 0,
+      "cleared": 0,
+      "gold": 0
+    },
+    {
+      "progress": 0,
+      "cleared": 0,
+      "gold": 0
+    },
+    {
+      "progress": 0,
+      "cleared": 0,
+      "gold": 0
+    },
+    {
+      "progress": 0,
+      "cleared": 0,
+      "gold": 0
+    },
+    {
+      "progress": 0,
+      "cleared": 0,
+      "gold": 0
+    },
+    {
+      "progress": 0,
+      "cleared": 0,
+      "gold": 0
+    },
+    {
+      "progress": 0,
+      "cleared": 0,
+      "gold": 0
+    },
+    {
+      "progress": 0,
+      "cleared": 0,
+      "gold": 0
+    }
+  ]
+}
