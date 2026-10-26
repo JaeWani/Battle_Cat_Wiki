@@ -21,9 +21,9 @@ Images: private community-images bucket, 512,000 bytes/object, JPEG/PNG/WebP MIM
 
 No advertising, paid upgrade, third-party messages, paid developer enrollment, or generated branding artwork was added.
 
-## Authentication setup still required
+## Authentication configuration
 
-Only Google OAuth is supported. Apple was removed at the operator’s request. The public Auth settings showed Google=false during implementation. Connected MCP tools can deploy SQL/Functions but do not expose Auth provider or redirect configuration. Browser environment became unavailable, so provider-console configuration and interactive OAuth testing could not be completed.
+Only Google OAuth is supported. Apple was removed at the operator’s request. Google was enabled by the operator and the operator confirmed successful live login. Apple remains disabled. The checklist below documents the required configuration.
 
 1. In this project's Auth URL configuration, set Site URL to https://jaewani.github.io/Battle_Cat_Wiki/ and allow the intended project redirect https://jaewani.github.io/Battle_Cat_Wiki/**.
 2. Configure a Google OAuth web client using the official provider guide.
@@ -39,23 +39,30 @@ SDK loading: exact pinned @supabase/supabase-js@2.118.0 via jsDelivr +esm. No un
 
 Registration is closed in noc_private.settings, enforced on the server as well as the UI. Guests may read public boards/reviews. There are no fabricated public posts or real-user fixtures.
 
-Operator must finalize contact email, legal notices (especially Singapore/international processing), age policy, record retention, deletion exceptions/disputes, and incident/rights-request procedures. The on-site terms/privacy pages are visibly labeled draft while registration is closed. These are implementation drafts, not a legal-compliance certification.
+Contact: battlecatwiki@gmail.com. Policy version: 2026-10-26-r1. The operator delegated retention and overseas processing policy decisions on 2026-10-26. Privacy/terms are available in the account dialog and standalone privacy.html/terms.html; source text lives in community-policy.mjs. Onboarding rejects a stale policy version.
 
-After final text and operational settings are approved, set public settings with the verified contact address and registration_open=true using the connected operator account. Changing this flag alone does not replace review of the actual on-site privacy/terms text.
+Registration stays closed. Core hosting is confirmed Singapore; Supabase's official FAQ additionally describes US operations/support, EU log processing, globally distributed support and global CDN. Exact EU countries and project-specific additional processing/retention details are not supplied by that FAQ and remain a launch follow-up. Do not describe all processing as Singapore-only or mark legal readiness complete.
 
-## Retention not activated
+## Retention applied
 
-Automatic approval review REJECTED a proposed persistent daily deletion job because specific retention periods/data destruction had not been explicitly approved. No cron extension/job from that rejected proposal was installed. Do not retry it indirectly.
+Migration 20261026051956 applies a daily 19:15 UTC (04:15 KST) cron job:
+- Consents: 30 days after account foreign key becomes NULL, not after original acceptance.
+- Resolved/dismissed reports: 90 days after resolved_at.
+- Closed appeals: 90 days after closed_at; a trigger starts the clock on closure.
+- Notifications: 30 days after creation.
+- App audit: 90 days; moderator.* events: 2 years.
 
-Proposed (NOT approved/applied) periods were audit: 1 year; orphaned consent: 30 days; resolved reports: 90 days; closed appeals: 90 days; notifications: 30 days. These are design proposals, not blanket legal retention requirements. Open disputes/legal holds and identity linkage need operator/legal review before any irreversible expiry. This SQL proposal is intentionally not committed as an executable migration.
+The private invoker purge function is not callable by anon/authenticated/service_role. Only the operator's scheduled DB role runs it. Private retention_holds entries exclude individual records. Holds are managed by operator SQL/service_role, with documented reason and review_at (90 days); review/removal is an operator task, not automatic release. No whole-account evidence retention is implied. For example, insert a hold for a specific report ID with its concrete legal reason, then remove it when that purpose ends. This table has RLS and no direct member access.
 
-Consequently, current records have no automatic time-based purge; the operator must resolve this before opening real registration. Supabase platform logs do not replace application audit retention. Actual administrative SQL/Dashboard reads are not fully covered by the app's workspace audit events; separately configure the required operator access monitoring/export.
+The earlier proposal was rejected because no specific policy had been authorized. After the operator explicitly delegated policy selection, this revised migration was accepted and applied; it does not silently retry the earlier one-year audit/creation-based inquiry proposal.
+
+Transaction/rollback retention fixtures verify expiry, protected records, unexpired records, closure timestamps and purge privilege denial. Periodic cleanup is subject to service availability (Free projects may pause). Monitor cron.job_run_details and outstanding deletion_jobs. Provider logs/backups and actual SQL/Dashboard access monitoring are distinct from application records; do not claim the app logs cover all administrator access.
 
 ## Self-withdrawal
 
 Member types 회원탈퇴. The authenticated command marks the member deleting, makes their posts/comments unavailable and removes ratings. noc-account-delete explicitly verifies the bearer using Auth getUser, requires an existing deletion request, removes the user's files through Storage API and deletes the Auth account through Admin API. The gateway verify_jwt flag is false because authentication is implemented inside the function; unauthenticated requests receive 401. No service credentials are sent to the browser.
 
-If final cleanup fails, access stays restricted and the member can retry from the account screen. Treat operationally stuck deletion_jobs as incidents requiring review. Existing report snapshots/audit/consent records are retained privately pending the approved retention policy; actor foreign keys become null after Auth deletion. This is not a full legal-hold/evidence preservation system. Draft media and canceled uploads need an approved orphan-cleanup policy too.
+If final cleanup fails, access stays restricted and the member can retry from the account screen. Treat operationally stuck deletion_jobs as incidents requiring review. Existing report snapshots/audit/consent records follow the retention periods above; actor foreign keys become null after Auth deletion. Record holds preserve only already stored data, not a deleted identity link. This is not a full forensic evidence preservation system. Draft media and canceled uploads need an approved orphan-cleanup policy too.
 
 ## Verification
 
@@ -64,7 +71,7 @@ If final cleanup fails, access stays restricted and the member can retry from th
 - Performance advisors: unused-index informational findings only on the new empty project; retain purposeful FK/query indexes.
 - Node tests cover character namespaces/forms, escaping, post bounds, attachment paths and unrated labels.
 - CI parses frontend modules and performs live HTTP tests for anonymous reads, registration flag, anonymous writes/admin/deletion rejection, Edge auth and pinned SDK availability.
-- No interactive authenticated browser flow was verified: Google OAuth is not configured and the execution/browser environment is unavailable. Do not claim successful Google login or browser end-to-end completion.
+- The operator confirmed Google login and return to the membership screen. Automated authenticated end-to-end checks remain outstanding.
 - Test before opening: two real accounts, Google sign-in, editing another user's content denied, rating updates, 3-photo limits, report/private snapshot visibility, owner/moderator actions, suspension, account deletion/retry, narrow mobile layout.
 
 ## Backups

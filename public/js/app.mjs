@@ -1,4 +1,4 @@
-import {initCommunity,renderCharacterCommunity} from './community.mjs?v=google-only-1';
+import {initCommunity,renderCharacterCommunity} from './community.mjs?v=privacy-r1';
 import {characterKey} from './community-model.mjs?v=google-only-1';
 import {initStages} from './stage-guide.mjs?v=notice-links-1';
 import {initHome} from './home.mjs?v=notice-links-1';
