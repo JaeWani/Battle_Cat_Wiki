@@ -23,13 +23,13 @@ No advertising, paid upgrade, third-party messages, paid developer enrollment, o
 
 ## Authentication setup still required
 
-The public Auth settings showed Google=false and Apple=false during implementation. Connected MCP tools can deploy SQL/Functions but do not expose Auth provider or redirect configuration. Browser environment became unavailable, so provider-console configuration and interactive OAuth testing could not be completed.
+Only Google OAuth is supported. Apple was removed at the operator’s request. The public Auth settings showed Google=false during implementation. Connected MCP tools can deploy SQL/Functions but do not expose Auth provider or redirect configuration. Browser environment became unavailable, so provider-console configuration and interactive OAuth testing could not be completed.
 
 1. In this project's Auth URL configuration, set Site URL to https://jaewani.github.io/Battle_Cat_Wiki/ and allow the intended project redirect https://jaewani.github.io/Battle_Cat_Wiki/**.
-2. Configure a Google OAuth web client and Apple Services ID/key using the official provider guides.
-3. Both providers use the Supabase callback https://pqqgkavnsgpmhojsimmq.supabase.co/auth/v1/callback.
-4. Keep provider client secrets and Apple's private key out of GitHub, chat, public config and browser code. Enter them in the provider/Supabase consoles.
-5. Test each provider on the live site. The client uses PKCE. It checks the public Auth settings and disables unconfigured providers.
+2. Configure a Google OAuth web client using the official provider guide.
+3. Google uses the Supabase callback https://pqqgkavnsgpmhojsimmq.supabase.co/auth/v1/callback.
+4. Keep the Google client secret out of GitHub, chat, public config and browser code. Enter them in the provider/Supabase consoles.
+5. Test Google sign-in on the live site. The client uses PKCE. It checks the public Auth settings and disables unconfigured providers.
 6. Operator signs in, then explicitly identify the operator's auth.users UUID before assigning owner in noc_private.staff. Do not grant the first registered account ownership.
 7. Owner bootstrap is an operator SQL action: insert into noc_private.staff(user_id,role) values ('<verified-own-auth-user-uuid>','owner'); this is a template, not executed automatically.
 
@@ -64,8 +64,8 @@ If final cleanup fails, access stays restricted and the member can retry from th
 - Performance advisors: unused-index informational findings only on the new empty project; retain purposeful FK/query indexes.
 - Node tests cover character namespaces/forms, escaping, post bounds, attachment paths and unrated labels.
 - CI parses frontend modules and performs live HTTP tests for anonymous reads, registration flag, anonymous writes/admin/deletion rejection, Edge auth and pinned SDK availability.
-- No interactive authenticated browser flow was verified: OAuth providers are not configured and the execution/browser environment is unavailable. Do not claim successful Google/Apple login or browser end-to-end completion.
-- Test before opening: two real accounts, each provider, editing another user's content denied, rating updates, 3-photo limits, report/private snapshot visibility, owner/moderator actions, suspension, account deletion/retry, narrow mobile layout.
+- No interactive authenticated browser flow was verified: Google OAuth is not configured and the execution/browser environment is unavailable. Do not claim successful Google login or browser end-to-end completion.
+- Test before opening: two real accounts, Google sign-in, editing another user's content denied, rating updates, 3-photo limits, report/private snapshot visibility, owner/moderator actions, suspension, account deletion/retry, narrow mobile layout.
 
 ## Backups
 

@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {characterKey,escapeHTML,validPost,safeImagePath,ratingLabel} from '../public/js/community-model.mjs';
+import {AUTH_PROVIDERS,characterKey,escapeHTML,validPost,safeImagePath,ratingLabel} from '../public/js/community-model.mjs';
 test('character ratings distinguish ally evolution forms and enemy namespaces',()=>{
  assert.equal(characterKey('cat','25-2'),'c25-2');assert.equal(characterKey('enemy','25'),'e25');
  assert.notEqual(characterKey('cat','25-1'),characterKey('cat','25-2'));
@@ -22,3 +22,5 @@ test('attachments must belong to the exact member and post and cannot be SVG',()
 test('unrated characters are not presented as zero-star scores',()=>{
  assert.equal(ratingLabel(null,0),'아직 평가가 없어요');assert.equal(ratingLabel(4.333,3),'4.3 / 5 · 3명 평가');
 });
+
+test('community sign-in policy permits Google only',()=>{assert.deepEqual(AUTH_PROVIDERS,['google']);assert(Object.isFrozen(AUTH_PROVIDERS));});

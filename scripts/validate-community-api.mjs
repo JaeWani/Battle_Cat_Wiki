@@ -13,3 +13,5 @@ for(const action of ['create_post','admin','request_deletion']){
 const deletion=await fetch(config.url+'/functions/v1/noc-account-delete',{method:'POST',headers:{apikey:config.publishableKey,'Content-Type':'application/json'},body:'{}',signal:AbortSignal.timeout(20000)});assert.equal(deletion.status,401);
 const sdk=await fetch(config.sdkURL,{signal:AbortSignal.timeout(20000)});assert(sdk.ok,'Pinned browser SDK unavailable');assert((await sdk.text()).includes('createClient'),'SDK export missing');
 console.log('Verified live public reads, registration setting, anonymous write/admin/deletion rejection, Edge authentication, and pinned browser SDK availability.');
+
+const authSettings=await fetch(config.url+'/auth/v1/settings',{headers:{apikey:config.publishableKey},signal:AbortSignal.timeout(20000)});assert(authSettings.ok);console.log('Google OAuth configured:',Boolean((await authSettings.json()).external.google));

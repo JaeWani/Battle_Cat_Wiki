@@ -1,3 +1,4 @@
+export const AUTH_PROVIDERS=Object.freeze(['google']);
 
 export const BOARD_NAMES={all:'전체',free:'자유게시판',question:'질문·답변',guide:'공략·팁',notice:'공지사항'};
 export const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

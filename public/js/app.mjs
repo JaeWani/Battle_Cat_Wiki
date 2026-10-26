@@ -1,5 +1,5 @@
-import {initCommunity,renderCharacterCommunity} from './community.mjs?v=1';
-import {characterKey} from './community-model.mjs';
+import {initCommunity,renderCharacterCommunity} from './community.mjs?v=google-only-1';
+import {characterKey} from './community-model.mjs?v=google-only-1';
 import {initStages} from './stage-guide.mjs?v=notice-links-1';
 import {initHome} from './home.mjs?v=notice-links-1';
 import {calculate,statsAt,searchUnits,TRAITS,RARITIES,ABILITIES} from './engine.mjs';
