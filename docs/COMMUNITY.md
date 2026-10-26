@@ -25,7 +25,7 @@ No advertising, paid upgrade, third-party messages, paid developer enrollment, o
 
 Only Google OAuth is supported. Apple was removed at the operator’s request. Google was enabled by the operator and the operator confirmed successful live login. Apple remains disabled. The checklist below documents the required configuration.
 
-1. In this project's Auth URL configuration, set Site URL to https://jaewani.github.io/Battle_Cat_Wiki/ and allow the intended project redirect https://jaewani.github.io/Battle_Cat_Wiki/**.
+1. In this project's Auth URL configuration, set Site URL to https://jaewani.github.io/Neko_Operations_Command/ and allow the intended project redirect https://jaewani.github.io/Neko_Operations_Command/**.
 2. Configure a Google OAuth web client using the official provider guide.
 3. Google uses the Supabase callback https://pqqgkavnsgpmhojsimmq.supabase.co/auth/v1/callback.
 4. Keep the Google client secret out of GitHub, chat, public config and browser code. Enter them in the provider/Supabase consoles.
@@ -87,3 +87,7 @@ Free plan does not include managed automatic DB backups. Export data to protecte
 - launch_readiness.sql verifies the public gate, explicit staff preview, stale-policy denial and pending deletion state using rollback fixtures. community_authorization.sql separately verifies cross-user ownership and report/moderation isolation.
 - Actual browser/OS execution environment is unavailable during this follow-up. Real Google sign-in was previously confirmed by the operator; authenticated live uploads, actual Storage bytes removed, completed Auth deletion and UI retry still need operator/browser verification. No service secret or test-auth backdoor was added.
 - Supabase's public FAQ does not identify all ancillary processing countries. See DATA_PROCESSING_REVIEW.md for the concrete supplier questions. No legal-compliance certification is made and public registration was subsequently authorized by the operator.
+
+## Repository path change
+
+GitHub repository and Pages path changed to Neko_Operations_Command at the operator's request. All website asset/module paths are relative. CORS origin stays https://jaewani.github.io. Update Supabase Auth Site URL to https://jaewani.github.io/Neko_Operations_Command/ and allow redirect https://jaewani.github.io/Neko_Operations_Command/** in the dashboard. These Auth URL settings cannot be changed by the connected MCP tools; they have not been marked verified. Google authorized JavaScript origin remains https://jaewani.github.io and Google provider callback remains https://pqqgkavnsgpmhojsimmq.supabase.co/auth/v1/callback.

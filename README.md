@@ -111,3 +111,11 @@ GitHub의 기본 `GITHUB_TOKEN`만으로 Pages 최초 활성화를 할 수 없�
 ## 커뮤니티
 
 전용 Supabase 프로젝트에 게시판·댓글·캐릭터 별점·신고·운영 관리·이미지 첨부·회원탈퇴 기능을 추가했습니다. 구글 제공자 설정, 운영자 지정, 개인정보 안내와 보관 정책을 확정할 때까지 정식 가입은 서버에서 차단합니다. [설정·검증·제한 사항](docs/COMMUNITY.md)을 확인하세요.
+
+## 내 정보 화면 미리보기
+
+https://jaewani.github.io/Neko_Operations_Command/#profile
+
+내 정보 탭, 예시 보유 캐릭터/진행 화면, 검색·희귀도 필터, 빈 화면 전환과 데이터 가져오기 디자인을 제공합니다. 예시 값은 명시적으로 표시하고 저장하지 않습니다. 실제 SAVE_DATA 해석·업로드·게임 정보 DB 저장은 아직 연결하지 않았습니다. 캐릭터 아트는 기존 게임 원본 자산만 사용합니다. 로그인한 닉네임과 게시글 활동은 기존 회원 세션과 연결합니다.
+
+저장소 변경에 맞춰 GitHub Pages는 Neko_Operations_Command 경로에 배포합니다. Supabase Auth의 Site URL 및 Redirect URLs에도 새 경로를 등록해야 합니다. Google OAuth의 JavaScript 원본(https://jaewani.github.io)과 Supabase 인증 콜백 주소 자체는 저장소 이름 변경의 영향을 받지 않습니다.

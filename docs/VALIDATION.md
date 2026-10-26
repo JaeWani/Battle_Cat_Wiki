@@ -40,7 +40,7 @@
 - 390px iframe 모바일 화면에서 5개 메뉴가 한 줄로 표시되고 상세 너비 375px/scrollWidth 375px로 가로 넘침이 없었다. 대성어 III의 공식 적 아이콘 7개 모두 정상 로딩. 순서 이동과 검색 작동 확인.
 - 카탈로그는 공식 안내가 확인된 일부 스냅샷이다. 적 이름·배율·마릿수·출현 시각·개별 개방일 및 공식 자료 미확인 분류는 추정하지 않는다.
 
-배포 확인: 소스 커밋 `6416c6721bb916437165da5f77f2753e2074f8c8`, [Pages 실행 40158478314](https://github.com/JaeWani/Battle_Cat_Wiki/actions/runs/40158478314) 성공. 공식 일정 수집·검증·배포 모두 성공했다. 실서비스 `https://jaewani.github.io/Battle_Cat_Wiki/#stages`에서 79개 맵/514개 스테이지 표시, 풍운 냥코탑 공식 기간, 50층에서 49층 이동 및 적 아이콘 4개 원본 로딩을 확인했다. 배포 시 공식 일정 확인 시각은 2026-10-25 12:30 KST였다. [배포 화면](stage-guide-live-20261025.jpg).
+배포 확인: 소스 커밋 `6416c6721bb916437165da5f77f2753e2074f8c8`, [Pages 실행 40158478314](https://github.com/JaeWani/Neko_Operations_Command/actions/runs/40158478314) 성공. 공식 일정 수집·검증·배포 모두 성공했다. 실서비스 `https://jaewani.github.io/Neko_Operations_Command/#stages`에서 79개 맵/514개 스테이지 표시, 풍운 냥코탑 공식 기간, 50층에서 49층 이동 및 적 아이콘 4개 원본 로딩을 확인했다. 배포 시 공식 일정 확인 시각은 2026-10-25 12:30 KST였다. [배포 화면](stage-guide-live-20261025.jpg).
 
 ## 스테이지 전수 후보 조사 확장 (2026-10-25)
 

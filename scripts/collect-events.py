@@ -45,7 +45,7 @@ def clean(text):return ' '.join(html.unescape(text).split())
 def get(url,limit=3_000_000):
     p=urllib.parse.urlparse(url)
     if p.scheme!='https' or p.hostname not in {'nyanko-announcement.ponosgames.com','nyanko-webview.ponosgames.com','ponosgames.com','ponos.s3.amazonaws.com','ponos.s3.dualstack.ap-northeast-1.amazonaws.com'}:raise ValueError('Unexpected source host')
-    with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'BattleCatWiki/0.1 (+https://github.com/JaeWani/Battle_Cat_Wiki)'}),timeout=18) as res:
+    with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'BattleCatWiki/0.1 (+https://github.com/JaeWani/Neko_Operations_Command)'}),timeout=18) as res:
         if urllib.parse.urlparse(res.url).hostname!=p.hostname:raise ValueError('Unexpected redirect')
         data=res.read(limit+1)
         if len(data)>limit:raise ValueError('Source too large')

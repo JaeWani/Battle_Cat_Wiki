@@ -11,6 +11,7 @@ async function api(action,payload={}){await ready;if(!client)throw new Error('�
 function accountTitle(){const b=$('#noc-account-button');if(b)b.textContent=session?(me?.nickname||'가입 완료하기'):'로그인';$('#noc-admin-button').hidden=!me?.role;}
 async function refreshMe(){
  me=session?await api('me'):null;accountTitle();
+ document.dispatchEvent(new CustomEvent('noc:account-state',{detail:{signedIn:!!session,nickname:me?.nickname||'',status:me?.status||null,posts:(me?.posts||[]).filter(p=>p.status==='published'),notificationCount:(me?.notifications||[]).filter(n=>!n.seen).length}}));
  if($('#noc-account-dialog')?.open)renderAccount();
  const panel=$('#character-community');if(panel)renderCharacterCommunity(panel.dataset.characterKey,panel);
 }

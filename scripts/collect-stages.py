@@ -63,7 +63,7 @@ async def collect(refresh=False):
     previous_path=ROOT/'public/data/stages.json'
     previous=json.loads(previous_path.read_text()) if previous_path.exists() else {'maps':[],'images':[]}
     old_images={i['iconCode']:i for i in previous.get('images',[])}
-    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=25),connector=aiohttp.TCPConnector(limit=4),headers={'User-Agent':'BattleCatWiki/0.1 (+https://github.com/JaeWani/Battle_Cat_Wiki)'},trust_env=True) as client:
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=25),connector=aiohttp.TCPConnector(limit=4),headers={'User-Agent':'BattleCatWiki/0.1 (+https://github.com/JaeWani/Neko_Operations_Command)'},trust_env=True) as client:
         async def fetch(url,limit):
             async with semaphore:
                 async with client.get(url,allow_redirects=False) as response:

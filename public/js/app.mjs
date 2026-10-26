@@ -1,4 +1,5 @@
-import {initCommunity,renderCharacterCommunity} from './community.mjs?v=privacy-r3';
+import {initProfile,updateProfileCatalog} from './profile.mjs?v=profile-1';
+import {initCommunity,renderCharacterCommunity} from './community.mjs?v=profile-1';
 import {characterKey} from './community-model.mjs?v=google-only-1';
 import {initStages} from './stage-guide.mjs?v=notice-links-1';
 import {initHome} from './home.mjs?v=notice-links-1';
@@ -143,15 +144,15 @@ function openDetail(key,kind){
   detail={u,kind,value:kind==='cat'?Math.min(state.level,u.maxLevel):state.mag};renderDetail();$('#detail-dialog').showModal();
 }
 function setView(view,updateHash=true){
-  if(!['home','stages','calculator','cats','enemies','about','community'].includes(view))view='home';
-  $('#community-view').hidden=view!=='community';$('#home-view').hidden=view!=='home';$('#stages-view').hidden=view!=='stages';
+  if(!['home','stages','calculator','cats','enemies','about','community','profile'].includes(view))view='home';
+  $('#profile-view').hidden=view!=='profile';$('#community-view').hidden=view!=='community';$('#home-view').hidden=view!=='home';$('#stages-view').hidden=view!=='stages';
   $('#calculator-view').hidden=view!=='calculator';$('#catalog-view').hidden=!['cats','enemies'].includes(view);$('#about-view').hidden=view!=='about';
   for(const button of document.querySelectorAll('.nav-button')){button.classList.toggle('active',button.dataset.view===view);if(button.dataset.view===view)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
   if(view==='cats'||view==='enemies'){
     if(catalog.kind!==view){catalog.kind=view;Object.assign(catalog,{query:'',trait:0,rarity:'all',page:1});$('#catalog-search').value='';$('#catalog-rarity').value='all';}
     renderCatalog();
   }
-  document.title=`${{home:'이벤트 일정',stages:'스테이지 정보',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내',community:'게시판'}[view]} · 냥코 작전 사령부`;
+  document.title=`${{home:'이벤트 일정',stages:'스테이지 정보',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내',community:'게시판',profile:'내 정보'}[view]} · 냥코 작전 사령부`;
   if(updateHash&&location.hash!==`#${view}`)history.replaceState(null,'',`#${view}`);
 }
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2500);}
@@ -211,6 +212,7 @@ async function init(){
     const responses=await Promise.all(['cats','enemies','meta'].map(n=>fetch(`data/${n}.json`)));
     for(const r of responses)if(!r.ok)throw new Error(`데이터 요청 실패 (${r.status})`);
     [cats,enemies,meta]=await Promise.all(responses.map(r=>r.json()));
+    updateProfileCatalog(cats);
     readState();wire();selectedUnits();syncInputs();updateCalculation();
     for(const select of [$('#catalog-rarity'),$('#picker-rarity')])select.innerHTML='<option value="all">전체 희귀도</option>'+RARITIES.map((r,i)=>`<option value="${i}">${r}</option>`).join('');
     $('#explore-enemies').innerHTML=[0,4,17,24,32].map(id=>{const u=enemies.find(e=>e.id===id);return `<button class="explore-card" data-detail="${u.key}" data-kind="enemy">${image(u)}<span>${esc(u.name)}</span></button>`;}).join('');
@@ -219,6 +221,7 @@ async function init(){
     setView(location.hash.slice(1)||'home',false);$('#loading').hidden=true;
   }catch(error){$('#loading').textContent=`데이터를 불러오지 못했어요. 연결 상태를 확인한 뒤 새로고침해 주세요. (${error.message})`;$('#loading').classList.add('error');console.error(error);}
 }
+initProfile();
 initCommunity();
 initHome();
 initStages();
