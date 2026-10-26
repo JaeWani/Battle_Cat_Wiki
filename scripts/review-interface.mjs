@@ -1,3 +1,4 @@
+import {saveFixture} from '../tests/helpers/save-fixture.mjs';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import {readFile,writeFile,mkdir,mkdtemp,rm} from 'node:fs/promises';
@@ -48,6 +49,29 @@ try{
   await writeFile(path.join(out,view+'-'+width+'.png'),Buffer.from(shot.data,'base64'));
   const row={view,width,ready,scrollWidth:info.scrollWidth,active:info.active,issues,offenders:info.offenders};report.push(row);console.log(JSON.stringify(row));
  }
+
+ // Exercise the real browser file input and module worker with a synthetic prefix fixture.
+ await command('Emulation.setDeviceMetricsOverride',{width:390,height:1000,deviceScaleFactor:1,mobile:true},sessionId);
+ await command('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/#profile'},sessionId);
+ for(let i=0;i<60;i++){if(await evaluate("!!document.querySelector('[data-profile=import]') && !document.querySelector('#profile-view').hidden"))break;await new Promise(r=>setTimeout(r,100));}
+ await evaluate("document.querySelector('[data-profile=import]').click()");
+ const fixture=saveFixture();
+ await evaluate("(()=>{const d=new DataTransfer();d.items.add(new File([new Uint8Array("+JSON.stringify([...fixture])+")],'SAVE_DATA'));const i=document.querySelector('#my-save-file');i.files=d.files;i.dispatchEvent(new Event('change',{bubbles:true}));})()");
+ let imported=false;
+ for(let i=0;i<80;i++){imported=await evaluate("!!document.querySelector('.my-import-summary')");if(imported)break;await new Promise(r=>setTimeout(r,100));}
+ assert.ok(imported,'Synthetic file did not reach the import preview');
+ const previewText=await evaluate("document.querySelector('.my-import-summary').innerText");
+ assert.ok(previewText.includes('2종')&&previewText.includes('15.5.0')&&previewText.includes('Lv. 20'),'Preview values mismatch');
+ assert.equal(await evaluate("document.querySelectorAll('#my-inventory .my-cat').length"),0,'Preview persisted without confirmation');
+ const shot=await command('Page.captureScreenshot',{format:'png',captureBeyondViewport:false,fromSurface:true},sessionId);
+ await writeFile(path.join(out,'save-import-preview-390.png'),Buffer.from(shot.data,'base64'));
+ await evaluate("(()=>{const d=new DataTransfer();d.items.add(new File(['bad'],'SAVE_DATA'));const i=document.querySelector('#my-save-file');i.files=d.files;i.dispatchEvent(new Event('change',{bubbles:true}));})()");
+ let rejected=false;for(let i=0;i<60;i++){rejected=await evaluate("!!document.querySelector('#my-import-error')?.textContent");if(rejected)break;await new Promise(r=>setTimeout(r,100));}
+ assert.ok(rejected,'Invalid save did not produce an error');
+ assert.equal(await evaluate("document.querySelectorAll('.my-import-summary').length"),0,'Invalid selection retained prior preview');
+ await evaluate("document.querySelector('#my-import-dialog [data-profile=close-import]').click()");
+ console.log('Verified browser file input, module worker, preview values, no unconfirmed persistence, and invalid-file rejection with synthetic data.');
+
  await command('Target.closeTarget',{targetId});
  assert.ok(report.every(r=>r.issues.length===0),'Interface layout failures; inspect interface-review/report.json');
 }catch(error){fatal=error;}

@@ -1,8 +1,8 @@
-import {initProfile,updateProfileCatalog} from './profile.mjs?v=command-1';
-import {initCommunity,renderCharacterCommunity} from './community.mjs?v=command-1';
+import {initProfile,updateProfileCatalog} from './profile.mjs?v=save-1';
+import {initCommunity,renderCharacterCommunity} from './community.mjs?v=save-1';
 import {characterKey} from './community-model.mjs?v=google-only-1';
 import {initStages} from './stage-guide.mjs?v=notice-links-1';
-import {initHome} from './home.mjs?v=command-1';
+import {initHome} from './home.mjs?v=save-1';
 import {calculate,statsAt,searchUnits,TRAITS,RARITIES,ABILITIES} from './engine.mjs';
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(n,d=0)=>Number.isFinite(n)?n.toLocaleString('ko-KR',{maximumFractionDigits:d}):'불가';

@@ -39,7 +39,7 @@ SDK loading: exact pinned @supabase/supabase-js@2.118.0 via jsDelivr +esm. No un
 
 The operator explicitly requested public registration on 2026-10-26. registration_open is enabled after deployment of policy r3. Server and UI use this live setting; Google identity, 14-or-over and policy acknowledgment checks remain enforced. Guests may read public boards/reviews. There are no fabricated public posts or real-user fixtures.
 
-Contact: battlecatwiki@gmail.com. Policy version: 2026-10-26-r3. The operator delegated retention and overseas processing policy decisions on 2026-10-26. Privacy/terms are available in the account dialog and standalone privacy.html/terms.html; source text lives in community-policy.mjs. Onboarding rejects a stale policy version.
+Contact: battlecatwiki@gmail.com. Policy version: 2026-10-26-r4. The operator delegated retention and overseas processing policy decisions on 2026-10-26. Privacy/terms are available in the account dialog and standalone privacy.html/terms.html; source text lives in community-policy.mjs. Onboarding rejects a stale policy version.
 
 Public registration was explicitly authorized by the operator on 2026-10-26. Core hosting is confirmed Singapore; Supabase's official FAQ additionally describes US operations/support, EU log processing, globally distributed support and global CDN. Exact EU countries and project-specific additional processing/retention details are not supplied by that FAQ and remain a launch follow-up. Do not describe all processing as Singapore-only or mark legal readiness complete.
 
@@ -91,3 +91,7 @@ Free plan does not include managed automatic DB backups. Export data to protecte
 ## Repository path change
 
 GitHub repository and Pages path changed to Neko_Operations_Command at the operator's request. All website asset/module paths are relative. CORS origin stays https://jaewani.github.io. Update Supabase Auth Site URL to https://jaewani.github.io/Neko_Operations_Command/ and allow redirect https://jaewani.github.io/Neko_Operations_Command/** in the dashboard. These Auth URL settings cannot be changed by the connected MCP tools; they have not been marked verified. Google authorized JavaScript origin remains https://jaewani.github.io and Google provider callback remains https://pqqgkavnsgpmhojsimmq.supabase.co/auth/v1/callback.
+
+## Optional game profile import
+
+Private game_profiles table and game_profile/save_game_profile/delete_game_profile RPC actions are available through the existing authenticated private dispatcher. There are no direct member table grants. Profile access is self-only; save requires active membership, current notice version, explicit optional game-data acknowledgment, whitelisted numeric fields and a current expected_updated_at. Withdrawal clears game profiles before Storage/Auth cleanup. Audit records contain counts/version/region, never raw saves or account-transfer credentials. See SAVE_IMPORT.md for supported fields, bounds and test scope.

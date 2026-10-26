@@ -7,6 +7,7 @@
 <link rel="icon" href="assets/u/0/0.png"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="community.css?v=privacy-r1">
 <link rel="stylesheet" href="profile.css?v=profile-1">
 <link rel="stylesheet" href="command.css?v=command-1">
+<link rel="stylesheet" href="save-import.css?v=save-1">
 </head>
 <body>
 <a class="skip" href="#main">본문으로 이동</a>
@@ -50,15 +51,7 @@
  <div class="my-heading page-heading"><h1>내 정보</h1></div>
  <div id="my-profile-root"></div>
 </section>
-<dialog id="my-import-dialog" class="my-import-dialog" aria-labelledby="my-import-title">
- <button class="close-dialog" data-profile="close-import" aria-label="불러오기 미리보기 닫기">×</button>
- <h2 id="my-import-title">게임 데이터 가져오기</h2>
- <p>화면 미리보기입니다. 파일 분석 및 계정 저장은 아직 지원하지 않습니다.</p>
- <div class="my-upload-placeholder"><span>GAME SAVE FILE</span><strong>SAVE_DATA</strong><p>추후 이곳에서 파일을 선택할 수 있어요.</p><button disabled>파일 선택 · 준비 중</button><span>현재는 파일을 읽거나 업로드하지 않아요.</span></div>
- <div class="my-import-steps"><span>01 파일 선택</span><span>02 보유 정보 확인</span><span>03 내 계정에 반영</span></div>
- <p class="field-help">계획된 방식: 원본 파일은 브라우저에서 처리하고, 확인한 캐릭터·레벨 등 필요한 항목만 계정에 저장해요.</p>
- <button class="text-button" data-profile="close-import">미리보기 닫기 →</button>
-</dialog>
+<dialog id="my-import-dialog" class="my-import-dialog" aria-labelledby="my-import-title"><button class="close-dialog" data-profile="close-import" aria-label="가져오기 닫기">×</button><div id="my-import-content"><h2 id="my-import-title">게임 데이터 가져오기</h2></div></dialog>
 
 <section id="community-view" class="view" hidden>
  <div class="catalog-intro page-heading"><h1>게시판</h1></div>
@@ -79,5 +72,5 @@
 <dialog id="picker-dialog" class="picker-dialog" aria-labelledby="picker-title"><div class="dialog-header"><div><span class="eyebrow">CHOOSE YOUR CHARACTER</span><h2 id="picker-title">적군 캐릭터 선택</h2></div><button class="close-dialog" data-close="picker-dialog" aria-label="선택창 닫기">×</button></div><div class="picker-controls"><label class="searchbox"><span aria-hidden="true">⌕</span><input id="picker-search" type="search" placeholder="이름 또는 캐릭터 ID로 검색" aria-label="선택할 캐릭터 검색"></label><select id="picker-rarity" aria-label="선택창 희귀도"><option value="all">전체 희귀도</option></select><div id="picker-filters" class="trait-filters" aria-label="선택창 속성 필터"></div><p id="picker-count" role="status"></p></div><div id="picker-grid" class="unit-grid picker-grid"></div><div id="picker-pagination" class="pagination"></div></dialog>
 <dialog id="detail-dialog" class="detail-dialog" aria-labelledby="detail-title"><div id="detail-content"></div><button class="close-dialog" data-close="detail-dialog" aria-label="상세 정보 닫기">×</button></dialog>
 <div id="toast" class="toast" role="status" hidden></div>
-<script type="module" src="js/app.mjs?v=command-1"></script>
+<script type="module" src="js/app.mjs?v=save-1"></script>
 </body></html>

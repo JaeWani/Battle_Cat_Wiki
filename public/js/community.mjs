@@ -1,5 +1,5 @@
-import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=privacy-r3';
-import {COMMUNITY_CONFIG as config} from './community-config.mjs?v=privacy-r3';
+import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=save-1';
+import {COMMUNITY_CONFIG as config} from './community-config.mjs?v=save-1';
 import {AUTH_PROVIDERS,BOARD_NAMES,escapeHTML as esc,validPost,safeImagePath,ratingLabel} from './community-model.mjs?v=google-only-1';
 const $=s=>document.querySelector(s),date=v=>new Date(v).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'short'});
 let client,ready,session=null,me=null,providers={},siteSettings={registration_open:false,contact_email:""},inputCallback=null,requestId=0,charRequest=0;
@@ -11,7 +11,7 @@ async function api(action,payload={}){await ready;if(!client)throw new Error('�
 function accountTitle(){const b=$('#noc-account-button');if(b)b.textContent=session?(me?.nickname||'가입 완료하기'):'로그인';$('#noc-admin-button').hidden=!me?.role;}
 async function refreshMe(){
  me=session?await api('me'):null;accountTitle();
- document.dispatchEvent(new CustomEvent('noc:account-state',{detail:{signedIn:!!session,nickname:me?.nickname||'',status:me?.status||null,posts:(me?.posts||[]).filter(p=>p.status==='published'),notificationCount:(me?.notifications||[]).filter(n=>!n.seen).length}}));
+ document.dispatchEvent(new CustomEvent('noc:account-state',{detail:{id:session?.user?.id||null,signedIn:!!session,nickname:me?.nickname||'',status:me?.status||null,posts:(me?.posts||[]).filter(p=>p.status==='published'),notificationCount:(me?.notifications||[]).filter(n=>!n.seen).length}}));
  if($('#noc-account-dialog')?.open)renderAccount();
  const panel=$('#character-community');if(panel)renderCharacterCommunity(panel.dataset.characterKey,panel);
 }
@@ -203,3 +203,7 @@ export function initCommunity(){
  })();
  ready.then(async()=>{siteSettings=await api("site_settings");await refreshMe();if(postQuery&&/^[0-9a-f-]{36}$/.test(postQuery))await showPost(postQuery);else await renderFeed();}).catch(failure);
 }
+
+export async function readGameProfile(){return api('game_profile');}
+export async function storeGameProfile(snapshot,expected){memberRequired();return api('save_game_profile',{...snapshot,expected_updated_at:expected,game_data_accepted:true,policy_version:POLICY_VERSION});}
+export async function removeGameProfile(expected){return api('delete_game_profile',{expected_updated_at:expected});}
