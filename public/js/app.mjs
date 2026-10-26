@@ -148,7 +148,7 @@ function setView(view,updateHash=true){
     if(catalog.kind!==view){catalog.kind=view;Object.assign(catalog,{query:'',trait:0,rarity:'all',page:1});$('#catalog-search').value='';$('#catalog-rarity').value='all';}
     renderCatalog();
   }
-  document.title=`${{home:'이벤트 일정',stages:'스테이지 정보',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내'}[view]} · 냥코 연구소`;
+  document.title=`${{home:'이벤트 일정',stages:'스테이지 정보',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내'}[view]} · 냥코 작전 사령부`;
   if(updateHash&&location.hash!==`#${view}`)history.replaceState(null,'',`#${view}`);
 }
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2500);}
