@@ -29,3 +29,7 @@ Operational browser checks remaining:
 - Create a test post with an image, edit/delete it, check another account cannot edit it.
 - Use a separately approved test account for report handling and withdrawal. Verify actual storage files and Auth account disappear; do not withdraw the sole owner account.
 - Verify cleanup retry behavior if Storage/Auth fails and verify narrow-screen dialogs.
+
+## Public opening decision
+
+On 2026-10-26 the operator explicitly requested opening general membership with the above supplier details and live authenticated browser checks still outstanding. Policy r3 reflects this operational decision; it does not assert that those follow-ups were resolved. No external inquiry was sent.

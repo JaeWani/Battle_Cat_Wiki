@@ -11,13 +11,13 @@ insert into noc_private.staff(user_id,role)values('30000000-0000-4000-8000-00000
 set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"30000000-0000-4000-8000-000000000002","role":"authenticated"}',true);
 do $$ begin
- begin perform public.noc_api('onboard','{"nickname":"closed test","age_confirmed":true,"terms_accepted":true,"privacy_accepted":true,"policy_version":"2026-10-26-r2"}');raise exception 'PUBLIC_GATE_BYPASS';exception when others then if sqlerrm='PUBLIC_GATE_BYPASS' then raise;end if;end;
+ begin perform public.noc_api('onboard','{"nickname":"closed test","age_confirmed":true,"terms_accepted":true,"privacy_accepted":true,"policy_version":"2026-10-26-r3"}');raise exception 'PUBLIC_GATE_BYPASS';exception when others then if sqlerrm='PUBLIC_GATE_BYPASS' then raise;end if;end;
 end $$;
 select set_config('request.jwt.claims','{"sub":"30000000-0000-4000-8000-000000000003","role":"authenticated"}',true);
 do $$ begin
  begin perform public.noc_api('onboard','{"nickname":"stale test","age_confirmed":true,"terms_accepted":true,"privacy_accepted":true,"policy_version":"stale"}');raise exception 'STALE_VERSION_ALLOWED';exception when others then if sqlerrm='STALE_VERSION_ALLOWED' then raise;end if;end;
 end $$;
-select public.noc_api('onboard','{"nickname":"preview test","age_confirmed":true,"terms_accepted":true,"privacy_accepted":true,"policy_version":"2026-10-26-r2"}');
+select public.noc_api('onboard','{"nickname":"preview test","age_confirmed":true,"terms_accepted":true,"privacy_accepted":true,"policy_version":"2026-10-26-r3"}');
 do $$ begin if public.noc_api('me')->>'status'<>'active' then raise exception 'Operator preview failed';end if;end $$;
 select set_config('request.jwt.claims','{"sub":"30000000-0000-4000-8000-000000000001","role":"authenticated"}',true);
 select public.noc_api('request_deletion','{"confirm":"회원탈퇴"}');

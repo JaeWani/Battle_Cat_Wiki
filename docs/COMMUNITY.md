@@ -37,11 +37,11 @@ SDK loading: exact pinned @supabase/supabase-js@2.118.0 via jsDelivr +esm. No un
 
 ## Registration gate and legal decisions
 
-Registration is closed in noc_private.settings, enforced on the server as well as the UI. Explicitly assigned staff may onboard for private operator testing while the public gate stays closed. Guests may read public boards/reviews. There are no fabricated public posts or real-user fixtures.
+The operator explicitly requested public registration on 2026-10-26. registration_open is enabled after deployment of policy r3. Server and UI use this live setting; Google identity, 14-or-over and policy acknowledgment checks remain enforced. Guests may read public boards/reviews. There are no fabricated public posts or real-user fixtures.
 
-Contact: battlecatwiki@gmail.com. Policy version: 2026-10-26-r2. The operator delegated retention and overseas processing policy decisions on 2026-10-26. Privacy/terms are available in the account dialog and standalone privacy.html/terms.html; source text lives in community-policy.mjs. Onboarding rejects a stale policy version.
+Contact: battlecatwiki@gmail.com. Policy version: 2026-10-26-r3. The operator delegated retention and overseas processing policy decisions on 2026-10-26. Privacy/terms are available in the account dialog and standalone privacy.html/terms.html; source text lives in community-policy.mjs. Onboarding rejects a stale policy version.
 
-Registration stays closed. Core hosting is confirmed Singapore; Supabase's official FAQ additionally describes US operations/support, EU log processing, globally distributed support and global CDN. Exact EU countries and project-specific additional processing/retention details are not supplied by that FAQ and remain a launch follow-up. Do not describe all processing as Singapore-only or mark legal readiness complete.
+Public registration was explicitly authorized by the operator on 2026-10-26. Core hosting is confirmed Singapore; Supabase's official FAQ additionally describes US operations/support, EU log processing, globally distributed support and global CDN. Exact EU countries and project-specific additional processing/retention details are not supplied by that FAQ and remain a launch follow-up. Do not describe all processing as Singapore-only or mark legal readiness complete.
 
 ## Retention applied
 
@@ -86,4 +86,4 @@ Free plan does not include managed automatic DB backups. Export data to protecte
 - Deletion handler is shared with Node tests. It validates bearer tokens with Auth getUser, requires the private deletion request, traverses paginated nested files, removes storage before Auth deletion, and returns a retry response without exposing private error details. This is unit verification with mock services, not a claim that an authenticated live Storage/Auth deletion was tested.
 - launch_readiness.sql verifies the public gate, explicit staff preview, stale-policy denial and pending deletion state using rollback fixtures. community_authorization.sql separately verifies cross-user ownership and report/moderation isolation.
 - Actual browser/OS execution environment is unavailable during this follow-up. Real Google sign-in was previously confirmed by the operator; authenticated live uploads, actual Storage bytes removed, completed Auth deletion and UI retry still need operator/browser verification. No service secret or test-auth backdoor was added.
-- Supabase's public FAQ does not identify all ancillary processing countries. See DATA_PROCESSING_REVIEW.md for the concrete supplier questions. No legal-compliance certification is made and public registration was not opened.
+- Supabase's public FAQ does not identify all ancillary processing countries. See DATA_PROCESSING_REVIEW.md for the concrete supplier questions. No legal-compliance certification is made and public registration was subsequently authorized by the operator.
