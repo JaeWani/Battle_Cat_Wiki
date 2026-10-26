@@ -1,3 +1,5 @@
+import {initCommunity,renderCharacterCommunity} from './community.mjs?v=1';
+import {characterKey} from './community-model.mjs';
 import {initStages} from './stage-guide.mjs?v=notice-links-1';
 import {initHome} from './home.mjs?v=notice-links-1';
 import {calculate,statsAt,searchUnits,TRAITS,RARITIES,ABILITIES} from './engine.mjs';
@@ -133,22 +135,23 @@ function renderDetail(){
   const {u,kind}=detail,unitStat=statsAt(u,{level:detail.value,magnification:detail.value,treasure:state.treasure==='max',curves:meta.levelCurves});
   const forms=kind==='cat'?cats.filter(c=>c.id===u.id):[];
   const ranges=u.longStart.map((start,i)=>`${start} ~ ${start+(u.longLength[i]||0)}`);
-  $('#detail-content').innerHTML=`<div class="detail-hero">${image(u)}<div><span class="unit-id">${kind==='cat'?'CAT':'ENEMY'} NO. ${String(u.id).padStart(3,'0')}</span><h2 id="detail-title">${esc(u.name)}</h2><div class="tag-list">${tags(u,kind)}</div><p class="detail-names">${esc(u.nameJP)}${u.nameEN?` / ${esc(u.nameEN)}`:''}</p></div></div>${forms.length?`<div class="detail-form-options" aria-label="진화 형태">${forms.map(f=>`<button data-form="${f.key}" class="${f.key===u.key?'selected':''}">${f.form+1}형태</button>`).join('')}</div>`:''}<div class="detail-options"><label for="detail-value">${kind==='cat'?'총 레벨':'적 배율 (%)'}</label><input id="detail-value" type="number" min="${kind==='cat'?1:.01}" max="${kind==='cat'?u.maxLevel:1000000}" step="${kind==='cat'?1:'any'}" value="${detail.value}" inputmode="decimal"><span>${kind==='cat'?`최대 ${u.maxLevel} · 세계편 보물 ${state.treasure==='max'?'최대':'없음'}`:'100% = 기본 능력치'}</span></div><p id="detail-error" role="alert" class="error-message" hidden></p><dl class="detail-stats"><div class="detail-stat"><dt>체력</dt><dd>${fmt(unitStat.hp)}</dd></div><div class="detail-stat"><dt>공격력 합계</dt><dd>${fmt(unitStat.attack)}</dd></div><div class="detail-stat"><dt>기본 DPS</dt><dd>${fmt(unitStat.dps,1)}</dd></div><div class="detail-stat"><dt>인식 사거리</dt><dd>${u.range}</dd></div><div class="detail-stat"><dt>이동 속도</dt><dd>${u.speed}</dd></div><div class="detail-stat"><dt>넉백 횟수</dt><dd>${u.kb}</dd></div></dl><h3>공격 정보</h3><p class="detail-text" id="detail-attack-info">${attackType(u)} · 공격 주기 ${fmt(u.attackF/30,2)}초 (${u.attackF}F)<br>타격별 공격력: ${unitStat.active.map(i=>fmt(unitStat.attacks[i])).join(' + ')||'직접 공격 없음'}<br>공격 발생: ${unitStat.active.map(i=>`${fmt(u.preswings[i]/30,2)}초`).join(' / ')||'없음'}${ranges.length?`<br>타격 범위: ${ranges.join(' / ')} (인식 위치 기준)` : ''}</p><h3>${kind==='cat'?'공격 대상 속성':'적 속성'}</h3><div class="tag-list">${tags(u,'enemy')}</div><h3>특수능력</h3><div class="abilities">${Object.keys(u.abilities).length?Object.entries(u.abilities).map(([id,v])=>`<span class="ability-chip">${esc(abilityText(id,v))}</span>`).join(''):'<span class="detail-text">별도 특수능력 없음</span>'}</div><p class="source-note">데이터: battlecatsinfo · JP ${meta.japanVersion}<br>${!u.koreanName?'한국어 이름이 없어 원본 이름으로 표시합니다. ':''}상세 능력치는 본능·냥콤보 및 상대별 특수효과를 적용하기 전입니다.<br>캐릭터 아트 © PONOS Corp. 및 각 권리자</p><button class="primary-button" data-apply-detail="true">이 캐릭터로 계산하기 <span aria-hidden="true">→</span></button>`;
+  $('#detail-content').innerHTML=`<div class="detail-hero">${image(u)}<div><span class="unit-id">${kind==='cat'?'CAT':'ENEMY'} NO. ${String(u.id).padStart(3,'0')}</span><h2 id="detail-title">${esc(u.name)}</h2><div class="tag-list">${tags(u,kind)}</div><p class="detail-names">${esc(u.nameJP)}${u.nameEN?` / ${esc(u.nameEN)}`:''}</p></div></div>${forms.length?`<div class="detail-form-options" aria-label="진화 형태">${forms.map(f=>`<button data-form="${f.key}" class="${f.key===u.key?'selected':''}">${f.form+1}형태</button>`).join('')}</div>`:''}<div class="detail-options"><label for="detail-value">${kind==='cat'?'총 레벨':'적 배율 (%)'}</label><input id="detail-value" type="number" min="${kind==='cat'?1:.01}" max="${kind==='cat'?u.maxLevel:1000000}" step="${kind==='cat'?1:'any'}" value="${detail.value}" inputmode="decimal"><span>${kind==='cat'?`최대 ${u.maxLevel} · 세계편 보물 ${state.treasure==='max'?'최대':'없음'}`:'100% = 기본 능력치'}</span></div><p id="detail-error" role="alert" class="error-message" hidden></p><dl class="detail-stats"><div class="detail-stat"><dt>체력</dt><dd>${fmt(unitStat.hp)}</dd></div><div class="detail-stat"><dt>공격력 합계</dt><dd>${fmt(unitStat.attack)}</dd></div><div class="detail-stat"><dt>기본 DPS</dt><dd>${fmt(unitStat.dps,1)}</dd></div><div class="detail-stat"><dt>인식 사거리</dt><dd>${u.range}</dd></div><div class="detail-stat"><dt>이동 속도</dt><dd>${u.speed}</dd></div><div class="detail-stat"><dt>넉백 횟수</dt><dd>${u.kb}</dd></div></dl><h3>공격 정보</h3><p class="detail-text" id="detail-attack-info">${attackType(u)} · 공격 주기 ${fmt(u.attackF/30,2)}초 (${u.attackF}F)<br>타격별 공격력: ${unitStat.active.map(i=>fmt(unitStat.attacks[i])).join(' + ')||'직접 공격 없음'}<br>공격 발생: ${unitStat.active.map(i=>`${fmt(u.preswings[i]/30,2)}초`).join(' / ')||'없음'}${ranges.length?`<br>타격 범위: ${ranges.join(' / ')} (인식 위치 기준)` : ''}</p><h3>${kind==='cat'?'공격 대상 속성':'적 속성'}</h3><div class="tag-list">${tags(u,'enemy')}</div><h3>특수능력</h3><div class="abilities">${Object.keys(u.abilities).length?Object.entries(u.abilities).map(([id,v])=>`<span class="ability-chip">${esc(abilityText(id,v))}</span>`).join(''):'<span class="detail-text">별도 특수능력 없음</span>'}</div><p class="source-note">데이터: battlecatsinfo · JP ${meta.japanVersion}<br>${!u.koreanName?'한국어 이름이 없어 원본 이름으로 표시합니다. ':''}상세 능력치는 본능·냥콤보 및 상대별 특수효과를 적용하기 전입니다.<br>캐릭터 아트 © PONOS Corp. 및 각 권리자</p><button class="primary-button" data-apply-detail="true">이 캐릭터로 계산하기 <span aria-hidden="true">→</span></button><section id="character-community"></section>`;
+  renderCharacterCommunity(characterKey(kind,u.key),$("#character-community"));
 }
 function openDetail(key,kind){
   const u=(kind==='cat'?cats:enemies).find(u=>u.key===key);if(!u)return;
   detail={u,kind,value:kind==='cat'?Math.min(state.level,u.maxLevel):state.mag};renderDetail();$('#detail-dialog').showModal();
 }
 function setView(view,updateHash=true){
-  if(!['home','stages','calculator','cats','enemies','about'].includes(view))view='home';
-  $('#home-view').hidden=view!=='home';$('#stages-view').hidden=view!=='stages';
+  if(!['home','stages','calculator','cats','enemies','about','community'].includes(view))view='home';
+  $('#community-view').hidden=view!=='community';$('#home-view').hidden=view!=='home';$('#stages-view').hidden=view!=='stages';
   $('#calculator-view').hidden=view!=='calculator';$('#catalog-view').hidden=!['cats','enemies'].includes(view);$('#about-view').hidden=view!=='about';
   for(const button of document.querySelectorAll('.nav-button')){button.classList.toggle('active',button.dataset.view===view);if(button.dataset.view===view)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
   if(view==='cats'||view==='enemies'){
     if(catalog.kind!==view){catalog.kind=view;Object.assign(catalog,{query:'',trait:0,rarity:'all',page:1});$('#catalog-search').value='';$('#catalog-rarity').value='all';}
     renderCatalog();
   }
-  document.title=`${{home:'이벤트 일정',stages:'스테이지 정보',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내'}[view]} · 냥코 작전 사령부`;
+  document.title=`${{home:'이벤트 일정',stages:'스테이지 정보',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내',community:'게시판'}[view]} · 냥코 작전 사령부`;
   if(updateHash&&location.hash!==`#${view}`)history.replaceState(null,'',`#${view}`);
 }
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2500);}
@@ -216,6 +219,7 @@ async function init(){
     setView(location.hash.slice(1)||'home',false);$('#loading').hidden=true;
   }catch(error){$('#loading').textContent=`데이터를 불러오지 못했어요. 연결 상태를 확인한 뒤 새로고침해 주세요. (${error.message})`;$('#loading').classList.add('error');console.error(error);}
 }
+initCommunity();
 initHome();
 initStages();
 init();

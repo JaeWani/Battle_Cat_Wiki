@@ -27,6 +27,8 @@ jobs:
         run: npm test
       - name: Validate numerical data and original image checksums
         run: npm run check
+      - name: Verify live community API and authentication boundaries
+        run: npm run check:community
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:

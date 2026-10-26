@@ -1,0 +1,1 @@
+do $$ declare t text; begin for t in select tablename from pg_tables where schemaname='noc_private' loop execute format('create policy noc_deny_direct on noc_private.%I for all to anon, authenticated using (false) with check (false)',t); end loop; end $$;

@@ -4,14 +4,14 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f7f7f2"><meta name="description" content="냥코 작전 사령부(냥작사) · Neko Operations Command(NOC). 냥코 대전쟁 한국판 이벤트·뽑기 일정을 먼저 확인하세요. 아군·적군 도감과 레벨·배율별 전투 계산기도 함께 제공합니다.">
 <title>냥코 작전 사령부 · 오늘의 이벤트 일정</title>
-<link rel="icon" href="assets/u/0/0.png"><link rel="stylesheet" href="styles.css">
+<link rel="icon" href="assets/u/0/0.png"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="community.css?v=1">
 </head>
 <body>
 <a class="skip" href="#main">본문으로 이동</a>
 <header class="site-header"><div class="header-inner">
 <a class="brand" href="#home" aria-label="냥코 작전 사령부 홈"><img src="assets/u/0/0.png" width="44" height="36" alt="고양이"><span>냥코 작전 사령부<small>Neko Operations Command · NOC</small></span></a>
-<nav aria-label="주 메뉴"><button class="nav-button active" data-view="home" aria-current="page">이벤트 일정</button><button class="nav-button" data-view="stages">스테이지</button><button class="nav-button" data-view="calculator">전투 계산기</button><button class="nav-button" data-view="cats">아군 도감</button><button class="nav-button" data-view="enemies">적군 도감</button></nav>
-<button class="about-link" data-view="about">데이터 안내 <span aria-hidden="true">↗</span></button>
+<nav aria-label="주 메뉴"><button class="nav-button active" data-view="home" aria-current="page">이벤트 일정</button><button class="nav-button" data-view="stages">스테이지</button><button class="nav-button" data-view="calculator">전투 계산기</button><button class="nav-button" data-view="cats">아군 도감</button><button class="nav-button" data-view="enemies">적군 도감</button><button class="nav-button" data-view="community">게시판</button></nav>
+<button class="noc-header-account" id="noc-account-button" data-noc="account">로그인</button><button class="about-link" data-view="about">데이터 안내 <span aria-hidden="true">↗</span></button>
 </div></header>
 <main id="main" tabindex="-1">
 <section id="home-view" class="view">
@@ -42,6 +42,19 @@
 <section class="explore-section"><div><span class="eyebrow">KNOW YOUR ENEMY</span><h2>상대를 알면, 공략이 보인다.</h2><p>속성부터 사거리까지. 적군 도감에서 다음 상대를 찾아보세요.</p><button data-view="enemies" class="outline-button">적군 도감 둘러보기 <span aria-hidden="true">→</span></button></div><div id="explore-enemies" class="explore-enemies"></div></section>
 </section>
 <section id="catalog-view" class="view" hidden><div class="catalog-intro"><div class="eyebrow">THE BATTLE CATS / FIELD GUIDE</div><h1 id="catalog-title">아군 도감</h1><p id="catalog-description"></p></div><div class="catalog-toolbar"><label class="searchbox"><span aria-hidden="true">⌕</span><input id="catalog-search" type="search" placeholder="이름 또는 캐릭터 ID로 검색" aria-label="도감 캐릭터 검색"><kbd>/</kbd></label><label id="rarity-wrap">희귀도 <select id="catalog-rarity"><option value="all">전체 희귀도</option></select></label></div><div id="catalog-filters" class="trait-filters" aria-label="속성 필터"></div><div class="section-top"><p id="catalog-count" role="status"></p><span class="subtle">캐릭터를 누르면 상세 정보를 볼 수 있어요</span></div><div id="catalog-grid" class="unit-grid"></div><div id="catalog-pagination" class="pagination"></div></section>
+
+<section id="community-view" class="view" hidden>
+ <div class="catalog-intro"><div class="eyebrow">NOC COMMUNITY / 함께 만드는 공략</div><h1>출진 이야기를<br>나누는 곳.</h1><p>질문부터 공략, 오늘의 냥코 이야기까지.</p></div>
+ <div id="community-message" role="status" class="noc-message" hidden></div>
+ <div class="noc-community-layout">
+  <aside class="noc-sidebar"><h2>게시판</h2><div id="noc-boards"></div><button class="text-button" data-noc="account">내 활동 · 알림 →</button><button class="text-button" data-noc="admin" id="noc-admin-button" hidden>운영 관리 →</button><button class="text-button" data-noc="policy" data-policy="terms">이용약관 →</button><button class="text-button" data-noc="policy" data-policy="privacy">개인정보 처리 안내 →</button></aside>
+  <div class="noc-main"><div class="noc-list-toolbar"><label class="searchbox"><span aria-hidden="true">⌕</span><input id="noc-search" type="search" maxlength="100" placeholder="게시글 제목·본문 검색" aria-label="게시글 검색"></label><button class="primary-button" data-noc="compose">글쓰기</button></div><div id="noc-feed" aria-live="polite"><p>게시판을 불러오는 중이에요.</p></div></div>
+ </div>
+</section>
+<dialog id="noc-account-dialog" class="noc-dialog" aria-labelledby="noc-account-title"><button class="close-dialog" data-close="noc-account-dialog" aria-label="회원 창 닫기">×</button><div id="noc-account-content"><h2 id="noc-account-title">로그인</h2></div></dialog>
+<dialog id="noc-policy-dialog" class="noc-dialog" aria-labelledby="noc-policy-title"><button class="close-dialog" data-close="noc-policy-dialog" aria-label="약관 닫기">×</button><div id="noc-policy-content"></div></dialog>
+<dialog id="noc-input-dialog" class="noc-dialog" aria-labelledby="noc-input-title"><button class="close-dialog" data-close="noc-input-dialog" aria-label="입력 창 닫기">×</button><form id="noc-input-form"><h2 id="noc-input-title"></h2><p id="noc-input-description"></p><label for="noc-input-value">내용</label><textarea id="noc-input-value" required maxlength="2000" rows="6"></textarea><button class="primary-button" type="submit">확인</button></form></dialog>
+
 <section id="about-view" class="view" hidden><div class="catalog-intro"><div class="eyebrow">OPEN DATA / CLEAR NUMBERS</div><h1>숫자에도 출처가 있어요.</h1><p>냥코 작전 사령부(냥작사, NOC)의 데이터와 계산 기준을 안내합니다.</p></div><div class="about-grid"><article class="white-panel"><h2>캐릭터 수치 출처</h2><div id="data-meta"></div><p>공개 TSV 파일에서 필요한 수치와 이름만 변환했습니다. 기존 위키의 페이지·디자인·공략 문서를 미러링하지 않습니다.</p><a href="https://github.com/battlecatsinfo/battlecatsinfo.github.io" target="_blank" rel="noopener noreferrer">battlecatsinfo 데이터 저장소 ↗</a></article><article class="white-panel"><h2>캐릭터 도감 이미지와 권리</h2><p>게임 원본 캐릭터 아트의 커뮤니티 보관본을 사용합니다. 생성 이미지·팬아트·별도 아이콘 라이브러리는 사용하지 않습니다. 파일은 변형 없이 복사하고 원본 경로와 SHA-256을 기록합니다.</p><p>보관본은 PONOS의 공식 배포 채널이 아닙니다. 게임 이미지의 권리는 PONOS 및 각 콜라보 권리자에게 있으며, 코드의 MIT 라이선스가 게임 아트의 이용허락을 의미하지 않습니다.</p><a href="https://github.com/battlecatsinfo/img" target="_blank" rel="noopener noreferrer">게임 아트 보관본 ↗</a> · <a href="data/images-manifest.json">이미지 출처·체크섬</a></article><article class="white-panel"><h2>스테이지 정보 출처</h2><p>스테이지 이름·통솔력·난이도·보상·출현 적 아이콘은 PONOS 한국판 게임 내 안내 페이지에서 직접 수집합니다. 적 아이콘도 PONOS 서버의 원본 PNG를 사용하며 출처와 SHA-256을 기록합니다.</p><p>개최일은 맵 이름과 정확히 일치하는 한국판 공식 공지만 연결합니다. 출현 적 이름·체력/공격력 배율은 MIT 공개 게임 데이터로 보완하고, 나무위키 대조 여부를 따로 표시합니다. 연결되지 않은 데이터와 마릿수·출현 시각·개별 개방일은 추정하지 않습니다. 분류 명칭은 나무위키를 참고해 일부 재구성했습니다.</p><a href="data/stages.json">공식 출처·이미지 체크섬 ↗</a> · <button class="text-button" data-view="stages">스테이지 정보 보기 →</button></article><article class="white-panel"><h2>계산 기준</h2><p>아군은 캐릭터별 레벨 성장표를 적용하고, 레벨 수치를 반올림한 뒤 세계편 보물 배수를 적용해 내림 처리합니다. 적은 입력한 최종 실효 배율을 체력과 공격력에 적용합니다.</p><p>연속공격은 각 타격 피해를 순서대로 누적합니다. 속성 대상에 대한 엄청 강하다·초 데미지·극 데미지·맷집 및 초수·초생명체·초현자·괴인 특효를 반영합니다.</p><p>처치 타수와 사망 타수는 직접 공격이 모두 명중한다는 조건입니다. 적 실드·배리어는 제거 후 본체 기준이며, 좀비는 최초 처치 기준입니다.</p></article><article class="white-panel"><h2>비공식 팬 프로젝트</h2><p>냥코 작전 사령부는 PONOS와 제휴하거나 승인을 받은 공식 서비스가 아닙니다. 한국어 번역표가 없는 최신 캐릭터는 일본어 또는 원본 이름으로 표시합니다.</p><p>일본판·대만판 기반 데이터이므로 한국판의 출시 상태와 수치가 다를 수 있습니다. 개별 데이터의 정확성과 이미지의 상업적 사용 허락을 보증하지 않습니다.</p><a href="https://github.com/JaeWani/Battle_Cat_Wiki" target="_blank" rel="noopener noreferrer">프로젝트 GitHub ↗</a> · <a href="THIRD_PARTY_LICENSES.txt">라이선스 고지</a></article></div></section>
 <div id="loading" class="loading" role="status" hidden>냥코 데이터를 불러오는 중…</div>
 </main>
@@ -49,5 +62,5 @@
 <dialog id="picker-dialog" class="picker-dialog" aria-labelledby="picker-title"><div class="dialog-header"><div><span class="eyebrow">CHOOSE YOUR CHARACTER</span><h2 id="picker-title">적군 캐릭터 선택</h2></div><button class="close-dialog" data-close="picker-dialog" aria-label="선택창 닫기">×</button></div><div class="picker-controls"><label class="searchbox"><span aria-hidden="true">⌕</span><input id="picker-search" type="search" placeholder="이름 또는 캐릭터 ID로 검색" aria-label="선택할 캐릭터 검색"></label><select id="picker-rarity" aria-label="선택창 희귀도"><option value="all">전체 희귀도</option></select><div id="picker-filters" class="trait-filters" aria-label="선택창 속성 필터"></div><p id="picker-count" role="status"></p></div><div id="picker-grid" class="unit-grid picker-grid"></div><div id="picker-pagination" class="pagination"></div></dialog>
 <dialog id="detail-dialog" class="detail-dialog" aria-labelledby="detail-title"><div id="detail-content"></div><button class="close-dialog" data-close="detail-dialog" aria-label="상세 정보 닫기">×</button></dialog>
 <div id="toast" class="toast" role="status" hidden></div>
-<script type="module" src="js/app.mjs?v=notice-links-1"></script>
+<script type="module" src="js/app.mjs?v=community-1"></script>
 </body></html>
