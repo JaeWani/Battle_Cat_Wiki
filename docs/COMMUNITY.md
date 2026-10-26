@@ -30,16 +30,16 @@ Only Google OAuth is supported. Apple was removed at the operator’s request. G
 3. Google uses the Supabase callback https://pqqgkavnsgpmhojsimmq.supabase.co/auth/v1/callback.
 4. Keep the Google client secret out of GitHub, chat, public config and browser code. Enter them in the provider/Supabase consoles.
 5. Test Google sign-in on the live site. The client uses PKCE. It checks the public Auth settings and disables unconfigured providers.
-6. Operator signs in, then explicitly identify the operator's auth.users UUID before assigning owner in noc_private.staff. Do not grant the first registered account ownership.
+6. Owner was bootstrapped only after finding exactly one email-confirmed Google identity matching the operator-provided battlecatwiki@gmail.com address. Do not grant first-signup ownership.
 7. Owner bootstrap is an operator SQL action: insert into noc_private.staff(user_id,role) values ('<verified-own-auth-user-uuid>','owner'); this is a template, not executed automatically.
 
 SDK loading: exact pinned @supabase/supabase-js@2.118.0 via jsDelivr +esm. No unversioned @2/latest. Community SDK loading is asynchronous so existing calculator/wiki code stays independent. Consider vendoring a locked bundle when the execution environment returns. CDN availability is checked in CI.
 
 ## Registration gate and legal decisions
 
-Registration is closed in noc_private.settings, enforced on the server as well as the UI. Guests may read public boards/reviews. There are no fabricated public posts or real-user fixtures.
+Registration is closed in noc_private.settings, enforced on the server as well as the UI. Explicitly assigned staff may onboard for private operator testing while the public gate stays closed. Guests may read public boards/reviews. There are no fabricated public posts or real-user fixtures.
 
-Contact: battlecatwiki@gmail.com. Policy version: 2026-10-26-r1. The operator delegated retention and overseas processing policy decisions on 2026-10-26. Privacy/terms are available in the account dialog and standalone privacy.html/terms.html; source text lives in community-policy.mjs. Onboarding rejects a stale policy version.
+Contact: battlecatwiki@gmail.com. Policy version: 2026-10-26-r2. The operator delegated retention and overseas processing policy decisions on 2026-10-26. Privacy/terms are available in the account dialog and standalone privacy.html/terms.html; source text lives in community-policy.mjs. Onboarding rejects a stale policy version.
 
 Registration stays closed. Core hosting is confirmed Singapore; Supabase's official FAQ additionally describes US operations/support, EU log processing, globally distributed support and global CDN. Exact EU countries and project-specific additional processing/retention details are not supplied by that FAQ and remain a launch follow-up. Do not describe all processing as Singapore-only or mark legal readiness complete.
 
@@ -77,3 +77,13 @@ If final cleanup fails, access stays restricted and the member can retry from th
 ## Backups
 
 Free plan does not include managed automatic DB backups. Export data to protected storage and back up private Storage objects separately; a DB dump contains only object metadata. Do not put member backups, emails, tokens or private attachment URLs in this public repository.
+
+## Launch hardening (2026-10-26)
+
+- The login screen explains that Google login itself creates an Auth account before membership completion, and links the notices before the OAuth button.
+- Pending users can request account deletion. The me response reports deleting when a deletion job exists even without a member row, so failed cleanup remains retryable.
+- Policy version is read from settings when stamping acceptance records, rather than hardcoded in SQL. Outdated acknowledgments fail closed.
+- Deletion handler is shared with Node tests. It validates bearer tokens with Auth getUser, requires the private deletion request, traverses paginated nested files, removes storage before Auth deletion, and returns a retry response without exposing private error details. This is unit verification with mock services, not a claim that an authenticated live Storage/Auth deletion was tested.
+- launch_readiness.sql verifies the public gate, explicit staff preview, stale-policy denial and pending deletion state using rollback fixtures. community_authorization.sql separately verifies cross-user ownership and report/moderation isolation.
+- Actual browser/OS execution environment is unavailable during this follow-up. Real Google sign-in was previously confirmed by the operator; authenticated live uploads, actual Storage bytes removed, completed Auth deletion and UI retry still need operator/browser verification. No service secret or test-auth backdoor was added.
+- Supabase's public FAQ does not identify all ancillary processing countries. See DATA_PROCESSING_REVIEW.md for the concrete supplier questions. No legal-compliance certification is made and public registration was not opened.

@@ -1,5 +1,5 @@
-import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=privacy-r1';
-import {COMMUNITY_CONFIG as config} from './community-config.mjs?v=privacy-r1';
+import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=privacy-r2';
+import {COMMUNITY_CONFIG as config} from './community-config.mjs?v=privacy-r2';
 import {AUTH_PROVIDERS,BOARD_NAMES,escapeHTML as esc,validPost,safeImagePath,ratingLabel} from './community-model.mjs?v=google-only-1';
 const $=s=>document.querySelector(s),date=v=>new Date(v).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'short'});
 let client,ready,session=null,me=null,providers={},siteSettings={registration_open:false,contact_email:""},inputCallback=null,requestId=0,charRequest=0;
@@ -85,12 +85,12 @@ function policy(kind){
 function renderAccount(){
  let body='<h2 id="noc-account-title">냥작사 회원</h2>';
  if(!session){
-  body+='<p>구글 계정으로 로그인하고 이야기를 나눠보세요.</p><div class="noc-oauth-buttons">'+AUTH_PROVIDERS.map(provider=>'<button class="noc-oauth" data-noc="login" data-provider="'+provider+'" '+(!providers[provider]?'disabled':'')+'>'+'Google'+'로 계속하기</button>').join('')+'</div>';
+  body+='<p>구글 계정으로 로그인하고 이야기를 나눠보세요.</p><p class="noc-warning">Google로 계속하면 가입 완료 전에도 계정 식별자·이메일·기본 프로필이 Supabase 인증 시스템에 저장됩니다. 주 저장 국가는 싱가포르이며 국외 지원·로그 처리가 추가로 발생할 수 있어요.</p><div class="noc-text-actions"><button class="text-button" data-noc="policy" data-policy="privacy">개인정보 처리방침 읽기</button><button class="text-button" data-noc="policy" data-policy="terms">이용약관 읽기</button></div><div class="noc-oauth-buttons">'+AUTH_PROVIDERS.map(provider=>'<button class="noc-oauth" data-noc="login" data-provider="'+provider+'" '+(!providers[provider]?'disabled':'')+'>'+'Google'+'로 계속하기</button>').join('')+'</div>';
   if(!providers.google)body+='<p class="noc-warning">로그인 제공자 연결을 준비 중이에요. 운영자가 Google 인증 설정을 마치면 이용할 수 있어요.</p>';
  }else if(!me||me.status==='pending'){
-  body+='<h3>가입 마무리</h3><form id="noc-onboard"><label>닉네임<input name="nickname" minlength="2" maxlength="20" required autocomplete="nickname"></label><label class="noc-checkbox"><input name="age" type="checkbox" required> 만 14세 이상입니다.</label><label class="noc-checkbox"><input name="terms" type="checkbox" required> 이용약관에 동의합니다.</label><button type="button" class="text-button" data-noc="policy" data-policy="terms">이용약관 읽기 →</button><label class="noc-checkbox"><input name="privacy" type="checkbox" required> 개인정보 처리방침를 확인했습니다.</label><button type="button" class="text-button" data-noc="policy" data-policy="privacy">개인정보 처리방침 읽기 →</button><button class="primary-button" type="submit" '+(!siteSettings.registration_open?'disabled':'')+'>가입 완료</button></form>';
-  if(!siteSettings.registration_open)body+='<p class="noc-warning">보관·파기 기준은 적용됐어요. 공급자의 추가 국외 처리 국가·경로 확인 등 가입 개방 준비를 진행 중이에요.</p>';
-  body+='<button class="text-button" data-noc="logout">로그아웃</button>';
+  body+='<h3>가입 마무리</h3><form id="noc-onboard"><label>닉네임<input name="nickname" minlength="2" maxlength="20" required autocomplete="nickname"></label><label class="noc-checkbox"><input name="age" type="checkbox" required> 만 14세 이상입니다.</label><label class="noc-checkbox"><input name="terms" type="checkbox" required> 이용약관에 동의합니다.</label><button type="button" class="text-button" data-noc="policy" data-policy="terms">이용약관 읽기 →</button><label class="noc-checkbox"><input name="privacy" type="checkbox" required> 개인정보 처리방침를 확인했습니다.</label><button type="button" class="text-button" data-noc="policy" data-policy="privacy">개인정보 처리방침 읽기 →</button><button class="primary-button" type="submit" '+(!siteSettings.registration_open&&!me?.role?'disabled':'')+'>가입 완료</button></form>';
+  if(!siteSettings.registration_open&&!me?.role)body+='<p class="noc-warning">보관·파기 기준은 적용됐어요. 공급자의 추가 국외 처리 국가·경로 확인 등 가입 개방 준비를 진행 중이에요.</p>';
+  body+=(me?.role?'<p class="noc-warning">운영자 비공개 테스트 계정이에요. 일반 가입이 닫혀 있어도 가입을 완료하고 운영 관리 기능을 확인할 수 있어요.</p>':'')+'<p class="field-help">가입하지 않을 경우 로그인 계정도 삭제할 수 있어요.</p><button class="noc-danger" data-noc="withdraw">로그인 계정 삭제</button><button class="text-button" data-noc="logout">로그아웃</button>';
  }else if(me.status==='deleting'){
   body+='<p>회원탈퇴 정리를 진행 중이에요. 정리가 완료되기 전까지 글을 작성할 수 없어요.</p><button class="primary-button" data-noc="finish-deletion">탈퇴 정리 다시 시도</button>';
  }else{
@@ -179,7 +179,7 @@ function bindEvents(){
   try{
    if(form.id==='noc-input-form'){const callback=inputCallback;if(callback){await callback($('#noc-input-value').value.trim());$('#noc-input-dialog').close();}}
    else if(form.id==='noc-onboard'){
-    if(!siteSettings.registration_open)throw new Error('정식 가입 안내를 준비 중이에요.');
+    if(!siteSettings.registration_open&&!me?.role)throw new Error('정식 가입 안내를 준비 중이에요.');
     await api('onboard',{nickname:form.elements.nickname.value,age_confirmed:form.elements.age.checked,terms_accepted:form.elements.terms.checked,privacy_accepted:form.elements.privacy.checked,policy_version:POLICY_VERSION});await refreshMe();showMessage('가입이 완료됐어요.');
    }else if(form.id==='noc-editor'){
     memberRequired();const values=validPost(form.elements.title.value,form.elements.body.value);const result=await api('save_post',{id:state.editor.id,...values});state.editor=null;await showPost(result.id);await refreshMe();
