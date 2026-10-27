@@ -1,4 +1,5 @@
 import {md5} from './save-checksum.mjs';
+import {readSaveTalents} from './save-talents.mjs';
 export const MAX_SAVE_BYTES=8*1024*1024;
 const MIN_VERSION=120000,MAX_VERSION=150599,MAX_CATS=4096;
 export class SaveParseError extends Error{constructor(code,message){super(message);this.name='SaveParseError';this.code=code;}}
@@ -52,5 +53,7 @@ export function parseSave(input){
  }
  // Internal chapter index 3 is not one of the nine main chapters.
  const progress=[0,1,2,4,5,6,7,8,9].map(i=>({progress:chapterProgress[i],cleared:clears[i].slice(0,48).filter(v=>v>0).length,gold:treasures[i].slice(0,48).filter(v=>v===3).length}));
- return {schemaVersion:1,gameVersion,region,cats,progress};
+ const {talentStatus,talents}=readSaveTalents(body,r.offset,total);
+ for(const cat of cats)cat.talents=talents?(talents.get(cat.id)||[]):null;
+ return {schemaVersion:2,gameVersion,region,cats,progress,talentStatus};
 }

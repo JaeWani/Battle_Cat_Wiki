@@ -10,9 +10,10 @@ test('legacy checksum matches independent Node implementation across padding bou
 for(const region of ['kr','jp','en','tw'])test(region+' prefix extracts character levels, forms and chapter summaries',()=>{
  const result=parseSave(saveFixture({region}));
  assert.equal(result.region,region);assert.equal(result.gameVersion,150500);
- assert.deepEqual(result.cats,[{id:0,form:1,level:20,plus:15},{id:25,form:2,level:50,plus:1}]);
+ assert.deepEqual(result.cats,[{id:0,form:1,level:20,plus:15,talents:null},{id:25,form:2,level:50,plus:1,talents:null}]);
+ assert.equal(result.talentStatus,'unavailable');
  assert.equal(result.progress.length,9);assert.deepEqual(result.progress[0],{progress:48,cleared:48,gold:48});
- assert.deepEqual(Object.keys(result).sort(),['schemaVersion','gameVersion','region','cats','progress'].sort());
+ assert.deepEqual(Object.keys(result).sort(),['schemaVersion','gameVersion','region','cats','progress','talentStatus'].sort());
  assert.ok(!JSON.stringify(result).includes('TEST-ONLY'));
 });
 test('tampered data cannot pass checksum',()=>{const b=saveFixture();b[100]^=1;assert.throws(()=>parseSave(b),{code:'CHECKSUM'});});

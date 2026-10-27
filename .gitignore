@@ -6,3 +6,6 @@ __pycache__/
 public/assets/
 public/stage-assets/
 public/data/stages.json
+
+artifacts/
+supabase/.temp/

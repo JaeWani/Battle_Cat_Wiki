@@ -1,5 +1,5 @@
-import {initProfile,updateProfileCatalog} from './profile.mjs?v=save-1';
-import {initCommunity,renderCharacterCommunity} from './community.mjs?v=save-1';
+import {initProfile,updateProfileCatalog} from './profile.mjs?v=manual-1';
+import {initCommunity,renderCharacterCommunity} from './community.mjs?v=manual-1';
 import {characterKey} from './community-model.mjs?v=google-only-1';
 import {initStages} from './stage-guide.mjs?v=notice-links-1';
 import {initHome} from './home.mjs?v=save-1';

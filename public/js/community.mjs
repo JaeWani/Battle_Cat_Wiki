@@ -1,5 +1,5 @@
-import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=save-1';
-import {COMMUNITY_CONFIG as config} from './community-config.mjs?v=save-1';
+import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=manual-1';
+import {COMMUNITY_CONFIG as config} from './community-config.mjs?v=manual-1';
 import {AUTH_PROVIDERS,BOARD_NAMES,escapeHTML as esc,validPost,safeImagePath,ratingLabel} from './community-model.mjs?v=google-only-1';
 const $=s=>document.querySelector(s),date=v=>new Date(v).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'short'});
 let client,ready,session=null,me=null,providers={},siteSettings={registration_open:false,contact_email:""},inputCallback=null,requestId=0,charRequest=0;

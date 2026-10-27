@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "gameVersion": 150500,
   "region": "kr",
   "cats": [
@@ -7,13 +7,43 @@
       "id": 0,
       "form": 1,
       "level": 20,
-      "plus": 15
+      "plus": 15,
+      "talents": []
+    },
+    {
+      "id": 9,
+      "form": 2,
+      "level": 50,
+      "plus": 0,
+      "talents": [
+        {
+          "id": 10,
+          "level": 4
+        },
+        {
+          "id": 55,
+          "level": 1
+        },
+        {
+          "id": 20,
+          "level": 0
+        },
+        {
+          "id": 32,
+          "level": 10
+        },
+        {
+          "id": 31,
+          "level": 7
+        }
+      ]
     },
     {
       "id": 25,
       "form": 2,
       "level": 30,
-      "plus": 0
+      "plus": 0,
+      "talents": []
     }
   ],
   "progress": [
@@ -62,5 +92,6 @@
       "cleared": 0,
       "gold": 0
     }
-  ]
+  ],
+  "talentStatus": "read"
 }
