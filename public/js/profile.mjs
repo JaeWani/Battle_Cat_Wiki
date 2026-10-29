@@ -1,13 +1,16 @@
 import {escapeHTML as esc} from './community-model.mjs?v=google-only-1';
-import {readGameProfile,storeGameProfile,removeGameProfile} from './community.mjs?v=manual-1';
+import {readGameProfile,storeGameProfile,removeGameProfile,storeProfileAvatar} from './community.mjs?v=avatar-1';
 import {formatGameVersion,MAX_SAVE_BYTES} from './save-parser.mjs';
 import {groupCharacters,importTalentChoices,talentSummary} from './game-profile-model.mjs';
 import {initProfileEditor} from './profile-editor.mjs';
 const $=s=>document.querySelector(s),rarities=['기본','EX','레어','슈퍼 레어','울트라 슈퍼 레어','레전드 레어'];
 const regions={kr:'한국판',jp:'일본판',en:'영문판',tw:'대만판'};
+import {avatarChoices,resolveAvatar} from './avatar-model.mjs';
+import {initAvatarPicker} from './profile-avatar.mjs';
+let avatarCatalog=[],avatarPicker=null;
 let groups=[],optionsPromise=null,editor=null,loading=false,loadError=false;
 let catalog=[],unitMap=new Map(),tab='cats',query='',rarity='all',saved=null,staged=null,omitted=0,expected=null,busy=false,worker=null,timer=null,job=0,accountGeneration=0,loadedFor=null,status='',consent=false;
-let account={id:null,signedIn:false,nickname:'',status:null,posts:[],notificationCount:0};
+let account={id:null,signedIn:false,nickname:'',status:null,posts:[],notificationCount:0,avatarKey:'c0-0'};
 const date=v=>new Date(v).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
 async function ensureGroups(){
  if(!catalog.length)throw new Error('도감 자료를 불러오는 중입니다. 잠시 후 다시 시도해 주세요.');
@@ -35,8 +38,9 @@ function renderBody(){
 }
 function render(){
  const root=$('#my-profile-root');if(!root)return;
+ const avatar=resolveAvatar(account.avatarKey,avatarCatalog);
  const nickname=account.nickname||(account.signedIn?'가입 완료 전':'로그인 전'),total=(saved?.cats||[]).length,highest=total?Math.max(...saved.cats.map(c=>c.level+c.plus)):null;
- root.innerHTML='<p class="my-game-status" id="my-game-status" role="status">'+esc(status)+'</p><div class="my-layout"><aside class="my-sidebar"><div class="my-member-card"><div class="my-member-top"><span class="small-label">NOC MEMBER</span><span class="my-member-status">'+(account.signedIn?'연결됨':'로그인 전')+'</span></div><div class="my-avatar"><img src="assets/u/0/0.png" width="104" height="79" alt="기본 프로필 고양이"></div><h2>'+esc(nickname)+'</h2><p>'+(account.signedIn?'Google 계정 연결':'Google 계정 미연결')+'</p><button class="my-account-action" data-noc="account">계정 관리 <span>↗</span></button></div><div class="my-side-links"><button data-view="calculator">전투 계산기 <span>↗</span></button><button data-view="cats">전체 아군 도감 <span>↗</span></button><button data-noc="account">내 활동 · 알림 <span>'+(account.notificationCount||'↗')+'</span></button></div><div class="my-side-note"><p>원본 파일은 브라우저에서만 읽습니다.<br>선택한 게임 정보만 계정에 저장합니다.</p><button data-noc="policy" data-policy="privacy">개인정보 처리방침 ↗</button></div></aside>'+
+ root.innerHTML='<p class="my-game-status" id="my-game-status" role="status">'+esc(status)+'</p><div class="my-layout"><aside class="my-sidebar"><div class="my-member-card"><div class="my-member-top"><span class="small-label">NOC MEMBER</span><span class="my-member-status">'+(account.signedIn?'연결됨':'로그인 전')+'</span></div><button type="button" class="my-avatar my-avatar-button" data-avatar-open aria-label="프로필 사진 변경"><img src="'+esc(avatar.image)+'" width="104" height="79" alt="'+esc(avatar.name)+' 프로필 사진"><span>변경</span></button><button type="button" class="text-button my-avatar-change" data-avatar-open>프로필 사진 변경</button><h2>'+esc(nickname)+'</h2><p>'+(account.signedIn?'Google 계정 연결':'Google 계정 미연결')+'</p><button class="my-account-action" data-noc="account">계정 관리 <span>↗</span></button></div><div class="my-side-links"><button data-view="calculator">전투 계산기 <span>↗</span></button><button data-view="cats">전체 아군 도감 <span>↗</span></button><button data-noc="account">내 활동 · 알림 <span>'+(account.notificationCount||'↗')+'</span></button></div><div class="my-side-note"><p>원본 파일은 브라우저에서만 읽습니다.<br>선택한 게임 정보만 계정에 저장합니다.</p><button data-noc="policy" data-policy="privacy">개인정보 처리방침 ↗</button></div></aside>'+
  '<div class="my-main"><section class="my-import-card"><div class="my-import-copy"><span class="my-source-type">MY GAME DATA</span><h2>게임 데이터</h2><p>'+(saved?esc(regions[saved.region])+' · '+sourceLabel()+(saved.gameVersion?' · '+formatGameVersion(saved.gameVersion):''):'연결된 데이터 없음')+'</p></div><div class="my-import-control"><button class="my-import-button my-manual-button" data-profile="manual" '+(loading?'disabled':'')+'>캐릭터 직접 설정 <span>↗</span></button><button class="my-import-button" data-profile="import">'+(saved?'다시 가져오기':'데이터 가져오기')+' <span>↗</span></button><span class="my-import-note">원본 파일 업로드 없음 · 최대 8MB</span></div></section>'+
  '<div class="my-stat-strip"><div><span>보유 캐릭터</span><strong>'+(saved?total:'—')+'<small>종</small></strong><span class="my-stat-note">저장된 캐릭터</span></div><div><span>최고 총 레벨</span><strong>'+(highest??'—')+'<small>Lv.</small></strong><span class="my-stat-note">기본 + 플러스</span></div><div><span>데이터 업데이트</span><strong class="my-update-label">'+(saved?esc(date(saved.updated_at)):'불러오기 전')+'</strong><span class="my-stat-note">'+(saved?'가져온 시점의 정보':'자동 동기화 아님')+'</span></div></div>'+
  '<div class="my-game-actions">'+(account.signedIn?'<button class="text-button" data-profile="reload">저장 정보 새로고침</button>':'<button class="text-button" data-noc="account">Google 로그인</button>')+(saved?'<button class="text-button my-delete-game" data-profile="delete">게임 데이터 삭제</button>':'')+'</div>'+
@@ -83,13 +87,14 @@ function selectTab(next){
  tab=next;for(const b of $('#profile-view').querySelectorAll('[data-profile-tab]')){const active=b.dataset.profileTab===tab;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;}
  $('#my-body').setAttribute('aria-labelledby','my-tab-'+tab);renderBody();$('#my-tab-'+tab).focus();
 }
-export function updateProfileCatalog(cats){catalog=cats;unitMap=new Map(catalog.map(c=>[c.id+'-'+c.form,c]));render();ensureGroups().then(render).catch(e=>statusText(e.message));}
+export function updateProfileCatalog(cats,enemies=[]){avatarCatalog=avatarChoices(cats,enemies);catalog=cats;unitMap=new Map(catalog.map(c=>[c.id+'-'+c.form,c]));render();ensureGroups().then(render).catch(e=>statusText(e.message));}
 export function initProfile(){
+ avatarPicker=initAvatarPicker({getChoices:()=>avatarCatalog,getAccount:()=>account,onSave:async key=>{await storeProfileAvatar(key);status='프로필 사진을 저장했습니다.';render();}});
  editor=initProfileEditor({getSaved:()=>saved,getGroups:async()=>{if(loading||loadError)throw new Error('저장된 정보를 먼저 새로고침해 주세요.');return ensureGroups();},getAccount:()=>account,onSave:async(snapshot,expected)=>{const id=account.id;const result=await storeGameProfile(snapshot,expected);if(id!==account.id)throw new Error('계정이 변경되었습니다. 다시 로그인해 주세요.');saved=result;status='캐릭터 설정을 저장했습니다.';render();}});
  render();
  document.addEventListener('noc:account-state',e=>{
   const changed=account.id!==e.detail.id;account=e.detail;
-  if(changed){editor.reset();loading=false;loadError=false;accountGeneration++;stopWorker();staged=null;saved=null;loadedFor=null;status='';$('#my-import-dialog')?.close();}
+  if(changed){avatarPicker.reset();editor.reset();loading=false;loadError=false;accountGeneration++;stopWorker();staged=null;saved=null;loadedFor=null;status='';$('#my-import-dialog')?.close();}
   render();if(account.signedIn&&loadedFor!==account.id){loadedFor=account.id;reload();}
  });
  document.addEventListener('click',async e=>{

@@ -1,4 +1,4 @@
-import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=manual-1';
+import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=avatar-1';
 import {COMMUNITY_CONFIG as config} from './community-config.mjs?v=manual-1';
 import {AUTH_PROVIDERS,BOARD_NAMES,escapeHTML as esc,validPost,safeImagePath,ratingLabel} from './community-model.mjs?v=google-only-1';
 const $=s=>document.querySelector(s),date=v=>new Date(v).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'short'});
@@ -11,7 +11,7 @@ async function api(action,payload={}){await ready;if(!client)throw new Error('�
 function accountTitle(){const b=$('#noc-account-button');if(b)b.textContent=session?(me?.nickname||'가입 완료하기'):'로그인';$('#noc-admin-button').hidden=!me?.role;}
 async function refreshMe(){
  me=session?await api('me'):null;accountTitle();
- document.dispatchEvent(new CustomEvent('noc:account-state',{detail:{id:session?.user?.id||null,signedIn:!!session,nickname:me?.nickname||'',status:me?.status||null,posts:(me?.posts||[]).filter(p=>p.status==='published'),notificationCount:(me?.notifications||[]).filter(n=>!n.seen).length}}));
+ document.dispatchEvent(new CustomEvent('noc:account-state',{detail:{id:session?.user?.id||null,signedIn:!!session,nickname:me?.nickname||'',avatarKey:me?.avatar_key||'c0-0',status:me?.status||null,posts:(me?.posts||[]).filter(p=>p.status==='published'),notificationCount:(me?.notifications||[]).filter(n=>!n.seen).length}}));
  if($('#noc-account-dialog')?.open)renderAccount();
  const panel=$('#character-community');if(panel)renderCharacterCommunity(panel.dataset.characterKey,panel);
 }
@@ -207,3 +207,11 @@ export function initCommunity(){
 export async function readGameProfile(){return api('game_profile');}
 export async function storeGameProfile(snapshot,expected){memberRequired();return api('save_game_profile',{...snapshot,expected_updated_at:expected,game_data_accepted:true,policy_version:POLICY_VERSION});}
 export async function removeGameProfile(expected){return api('delete_game_profile',{expected_updated_at:expected});}
+
+export async function storeProfileAvatar(key){
+ memberRequired();const id=session.user.id;await api('set_avatar',{key});
+ if(session?.user?.id!==id)throw new Error('계정이 변경되었습니다. 다시 선택해 주세요.');
+ await refreshMe();
+ if(session?.user?.id!==id)throw new Error('계정이 변경되었습니다. 다시 선택해 주세요.');
+ return me?.avatar_key||'c0-0';
+}

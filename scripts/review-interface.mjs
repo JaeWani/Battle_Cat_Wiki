@@ -9,6 +9,18 @@ const root=path.resolve('public'),out=path.resolve('artifacts/interface-review')
 await mkdir(out,{recursive:true});
 const mime={'.html':'text/html','.mjs':'text/javascript','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'};
 const server=http.createServer(async(req,res)=>{
+ try{
+  if(new URL(req.url,'http://localhost').pathname==='/__avatar_test'){
+   const index=await readFile(path.join(root,'index.html'),'utf8'),dialog=index.match(/<dialog id="my-avatar-dialog"[\s\S]*?<\/dialog>/)[0];
+   const html='<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="command.css"><link rel="stylesheet" href="profile-avatar.css"><button data-avatar-open>Open avatar test</button><output id="avatar-test-saved">c0-0</output>'+dialog+`<script type="module">
+    import {initAvatarPicker} from './js/profile-avatar.mjs';import {avatarChoices} from './js/avatar-model.mjs';
+    const [cats,enemies]=await Promise.all(['cats','enemies'].map(n=>fetch('data/'+n+'.json').then(r=>r.json()))),choices=avatarChoices(cats,enemies),account={id:'avatar-ui-fixture',status:'active',avatarKey:'c0-0'};
+    initAvatarPicker({getChoices:()=>choices,getAccount:()=>account,onSave:async key=>{account.avatarKey=key;document.querySelector('#avatar-test-saved').textContent=key;}});
+    document.body.dataset.ready='true';
+   </script>`;
+   res.writeHead(200,{'Content-Type':'text/html','Cache-Control':'no-store'}).end(html);return;
+  }
+ }catch{res.writeHead(500).end();return;}
  try{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname),file=path.resolve(root,'.'+(pathname==='/'?'/index.html':pathname));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}
  const body=await readFile(file);res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});res.end(body);
  }catch{res.writeHead(404).end();}
@@ -97,6 +109,34 @@ try{
   assert.equal(await evaluate("document.querySelectorAll('#my-inventory .my-cat').length"),0,'Manual draft persisted without account save');
  }
  console.log('Verified manual editor at desktop/mobile widths: full catalog, ownership, levels, talents, filter retention, consent and cancellation.');
+ // Avatar selection uses the full original-artwork catalog and does not save on cancel.
+ for(const width of [1440,390]){
+  await command('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<600},sessionId);
+  await evaluate("document.querySelector('[data-avatar-open]').click()");
+  assert.ok(await evaluate("document.querySelector('#my-avatar-dialog').open"),'Avatar picker did not open');
+  assert.ok((await evaluate("document.querySelector('#my-avatar-count').textContent")).startsWith('2177'),'Ally evolution choices missing');
+  await evaluate("document.querySelector('[data-avatar-kind=enemy]').click()");
+  assert.ok((await evaluate("document.querySelector('#my-avatar-count').textContent")).startsWith('792'),'Enemy choices missing');
+  await evaluate("(()=>{const i=document.querySelector('#my-avatar-search');i.value='e24';i.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-avatar-key=e24]').click();})()");
+  assert.ok(await evaluate("document.querySelector('#my-avatar-preview img').getAttribute('src').startsWith('assets/e/24/')"),'Enemy preview missing');
+  assert.ok(await evaluate("document.querySelector('#my-avatar-save').disabled"),'Anonymous avatar save enabled');
+  const overflow=await evaluate("(()=>{const d=document.querySelector('#my-avatar-dialog');return d.scrollWidth>d.clientWidth+1;})()");assert.equal(overflow,false,'Avatar dialog overflow');
+  const shot=await command('Page.captureScreenshot',{format:'png',captureBeyondViewport:false,fromSurface:true},sessionId);await writeFile(path.join(out,'avatar-picker-'+width+'.png'),Buffer.from(shot.data,'base64'));
+  await evaluate("document.querySelector('#my-avatar-dialog [data-avatar-action=close]').click();document.querySelector('[data-avatar-open]').click()");
+  assert.ok(await evaluate("document.querySelector('#my-avatar-preview img').getAttribute('src').endsWith('/u/0/0.png')"),'Cancel changed saved avatar');
+  await evaluate("document.querySelector('#my-avatar-dialog [data-avatar-action=close]').click()");
+ }
+ // The real picker module also exercises its save adapter and reload state in an isolated UI fixture.
+ await command('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/__avatar_test'},sessionId);
+ for(let i=0;i<80;i++){if(await evaluate("document.body?.dataset.ready==='true'"))break;await new Promise(r=>setTimeout(r,100));}
+ for(const key of ['c25-2','e24','c0-0']){
+  await evaluate("document.querySelector('[data-avatar-open]').click()");
+  await evaluate("document.querySelector('[data-avatar-kind="+(key[0]==='e'?'enemy':'cat')+"]').click()");
+  await evaluate("(()=>{const i=document.querySelector('#my-avatar-search');i.value="+JSON.stringify(key)+";i.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-avatar-key=\""+key+"\"]').click();document.querySelector('#my-avatar-save').click();})()");
+  for(let i=0;i<50;i++){if(await evaluate("!document.querySelector('#my-avatar-dialog').open"))break;await new Promise(r=>setTimeout(r,100));}
+  assert.equal(await evaluate("document.querySelector('#avatar-test-saved').textContent"),key,'Avatar save adapter received wrong identifier');
+ }
+ console.log('Verified avatar picker: ally/enemy search and preview, desktop/mobile layout, anonymous gate, cancel and ally/enemy/default save roundtrips with an isolated adapter.');
  await command('Target.closeTarget',{targetId});
  assert.ok(report.every(r=>r.issues.length===0),'Interface layout failures; inspect interface-review/report.json');
 }catch(error){fatal=error;}

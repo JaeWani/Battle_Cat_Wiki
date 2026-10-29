@@ -7,7 +7,7 @@ async function rpc(action,payload={}){
 const boards=await rpc('boards');assert(boards.response.ok);assert.equal(boards.data.length,4);
 const settings=await rpc('site_settings');assert(settings.response.ok);assert.equal(typeof settings.data.registration_open,'boolean');
 const character=await rpc('character',{key:'c25-2'});assert(character.response.ok);assert.equal(typeof character.data.count,'number');
-for(const action of ['create_post','admin','request_deletion','game_profile','save_game_profile','delete_game_profile']){
+for(const action of ['create_post','admin','request_deletion','game_profile','save_game_profile','delete_game_profile','set_avatar']){
  const result=await rpc(action,{board:'free',confirm:'회원탈퇴'});assert(!result.response.ok,'Unauthenticated action allowed: '+action);
 }
 const deletion=await fetch(config.url+'/functions/v1/noc-account-delete',{method:'POST',headers:{apikey:config.publishableKey,'Content-Type':'application/json'},body:'{}',signal:AbortSignal.timeout(20000)});assert.equal(deletion.status,401);

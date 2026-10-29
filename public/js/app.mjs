@@ -1,5 +1,5 @@
-import {initProfile,updateProfileCatalog} from './profile.mjs?v=manual-1';
-import {initCommunity,renderCharacterCommunity} from './community.mjs?v=manual-1';
+import {initProfile,updateProfileCatalog} from './profile.mjs?v=avatar-1';
+import {initCommunity,renderCharacterCommunity} from './community.mjs?v=avatar-1';
 import {characterKey} from './community-model.mjs?v=google-only-1';
 import {initStages} from './stage-guide.mjs?v=notice-links-1';
 import {initHome} from './home.mjs?v=save-1';
@@ -213,7 +213,7 @@ async function init(){
     const responses=await Promise.all(['cats','enemies','meta'].map(n=>fetch(`data/${n}.json`)));
     for(const r of responses)if(!r.ok)throw new Error(`데이터 요청 실패 (${r.status})`);
     [cats,enemies,meta]=await Promise.all(responses.map(r=>r.json()));
-    updateProfileCatalog(cats);
+    updateProfileCatalog(cats,enemies);
     readState();wire();selectedUnits();syncInputs();updateCalculation();
     for(const select of [$('#catalog-rarity'),$('#picker-rarity')])select.innerHTML='<option value="all">전체 희귀도</option>'+RARITIES.map((r,i)=>`<option value="${i}">${r}</option>`).join('');
     $('#explore-enemies').innerHTML=[0,4,17,24,32].map(id=>{const u=enemies.find(e=>e.id===id);return `<button class="explore-card" data-detail="${u.key}" data-kind="enemy">${image(u)}<span>${esc(u.name)}</span></button>`;}).join('');
