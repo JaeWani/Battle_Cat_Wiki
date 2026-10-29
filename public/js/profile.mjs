@@ -130,7 +130,7 @@ export function initProfile(){
  $('#profile-view').addEventListener('input',e=>{if(e.target.id==='my-search'){query=e.target.value;renderInventory();}});
  $('#profile-view').addEventListener('keydown',e=>{
   if(!e.target.matches('[data-profile-tab]')||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;
-  e.preventDefault();const tabs=['cats','progress','activity'],index=tabs.indexOf(tab);selectTab(e.key==='Home'?'cats':e.key==='End'?'activity':tabs[(index+(e.key==='ArrowRight'?1:2))%3]);
+  e.preventDefault();const tabs=[...$('#profile-view').querySelectorAll('[data-profile-tab]')].map(b=>b.dataset.profileTab),index=tabs.indexOf(tab);selectTab(e.key==='Home'?tabs[0]:e.key==='End'?tabs.at(-1):tabs[(index+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length]);
  });
  $('#my-import-dialog').addEventListener('close',()=>{stopWorker();staged=null;consent=false;});
 }

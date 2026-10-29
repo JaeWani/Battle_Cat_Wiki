@@ -210,7 +210,8 @@ try{
   await command('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<600},sessionId);
   await command('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/#profile'},sessionId);
   await waitFor('document.querySelector("#footer-version")?.textContent.startsWith("JP ") && !!document.querySelector("[data-profile-tab=growth]")');
-  await evaluate('localStorage.removeItem("noc-growth-v1:guest");document.querySelector("[data-profile-tab=growth]").click()');
+  await evaluate('localStorage.removeItem("noc-growth-v1:guest");document.querySelector("[data-profile-tab=progress]").click();document.querySelector("[data-profile-tab=progress]").dispatchEvent(new KeyboardEvent("keydown",{key:"ArrowRight",bubbles:true}))');
+  assert.ok(await evaluate('document.querySelector("[data-profile-tab=growth]").getAttribute("aria-selected")==="true"'),'Arrow keys skipped the growth tab');
   await waitFor('!!document.querySelector("#growth-goal-form")');
   await evaluate('(()=>{const f=document.querySelector("#growth-goal-form");f.elements.id.value="32";f.elements.id.dispatchEvent(new Event("change"));f.elements.currentLevel.value="29";f.elements.currentForm.value="1";f.elements.targetLevel.value="30";f.elements.targetForm.value="2";f.requestSubmit();})()');
   assert.equal(await evaluate('document.querySelectorAll(".growth-goal").length'),1,'Growth goal not created');

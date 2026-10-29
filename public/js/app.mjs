@@ -1,4 +1,4 @@
-import {initProfile,updateProfileCatalog} from './profile.mjs?v=growth-1';
+import {initProfile,updateProfileCatalog} from './profile.mjs?v=growth-2';
 import {initCommunity,renderCharacterCommunity} from './community.mjs?v=password-1';
 import {characterKey} from './community-model.mjs?v=google-only-1';
 import {initStages} from './stage-guide.mjs?v=notice-links-1';
