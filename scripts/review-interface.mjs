@@ -124,7 +124,10 @@ try{
  // Avatar selection uses the full original-artwork catalog and does not save on cancel.
  for(const width of [1440,390]){
   await command('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<600},sessionId);
-  await evaluate("document.querySelector('[data-avatar-open]').click()");
+  const opener=await evaluate("(()=>{const b=document.querySelector('[data-avatar-open]');if(!b.getClientRects().length)return null;b.scrollIntoView({block:'center'});const r=b.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()");
+  assert.ok(opener,'Profile photo controls are hidden at '+width+'px');
+  await command('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...opener},sessionId);
+  await command('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...opener},sessionId);
   assert.ok(await evaluate("document.querySelector('#my-avatar-dialog').open"),'Avatar picker did not open');
   assert.ok((await evaluate("document.querySelector('#my-avatar-count').textContent")).startsWith('2177'),'Ally evolution choices missing');
   await evaluate("document.querySelector('[data-avatar-kind=enemy]').click()");
