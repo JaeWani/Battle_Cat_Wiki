@@ -237,6 +237,10 @@ try{
  await evaluate('Storage.prototype.setItem=function(){throw new DOMException("Quota exceeded","QuotaExceededError")};document.querySelector("#growth-stock-form").requestSubmit()');
  assert.ok((await evaluate('document.querySelector("#growth-feedback").textContent')).includes('저장에 실패'),'Storage failure was silent');
  console.log('Verified growth planner: production desktop/mobile profile tab, evolution/level costs, stock and deficit persistence, reload, non-destructive removal, official source links, account isolation and storage failure feedback.');
+ await command('Network.enable',{},sessionId);await command('Network.setBlockedURLs',{urls:['*data/growth.json*']},sessionId);
+ await command('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/__growth_test?retry=1'},sessionId);await waitFor('!!document.querySelector("[data-growth=retry]")');
+ await command('Network.setBlockedURLs',{urls:[]},sessionId);await evaluate('document.querySelector("[data-growth=retry]").click()');await waitFor('!!document.querySelector("#growth-goal-form")');
+ console.log('Verified growth data network failure and successful retry.');
  await command('Target.closeTarget',{targetId});
  assert.ok(report.every(r=>r.issues.length===0),'Interface layout failures; inspect interface-review/report.json');
 }catch(error){fatal=error;}

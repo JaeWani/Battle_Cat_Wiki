@@ -1,4 +1,4 @@
-import {initGrowthPlanner} from './growth-planner.mjs';
+import {initGrowthPlanner} from './growth-planner.mjs?v=growth-2';
 import {escapeHTML as esc} from './community-model.mjs?v=google-only-1';
 import {readGameProfile,storeGameProfile,removeGameProfile,storeProfileAvatar} from './community.mjs?v=password-1';
 import {formatGameVersion,MAX_SAVE_BYTES} from './save-parser.mjs';

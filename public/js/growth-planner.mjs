@@ -3,6 +3,7 @@ import {publicNoticeURL} from './notice-links.mjs';
 import {MAX_GOALS,validGoal,validPlan,requirements,activityCandidates,whole} from './growth-model.mjs';
 import {isStale,kstDay} from './events.mjs';
 const fmt=n=>n.toLocaleString('ko-KR'),empty=()=>({version:1,goals:[],stock:{}});
+function periodText(event){if(event.recurrence)return event.recurrence.label||'반복 개최일 · 시간은 공지 확인';if(!event.period)return '개최 기간 미확인';const clock=value=>Number.isFinite(Date.parse(value))?new Date(value).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}):'원문 확인';return clock(event.period.startAt)+' ~ '+clock(event.period.announcedEndAt||event.period.endAt)+' (한국시간)';}
 function safeSource(value){try{const u=new URL(value);if(u.protocol==='https:'&&['ponosgames.com','nyanko-announcement.ponosgames.com'].includes(u.hostname))return publicNoticeURL(u.href);}catch{}return 'https://battlecats.club/kr/';}
 export function initGrowthPlanner({getSaved,getAccount,getCatalog}){
  let dataPromise,data=null,snapshot=null,plan=empty(),key=null,view=null,ticket=0,message='',persistError='';
@@ -16,7 +17,7 @@ export function initGrowthPlanner({getSaved,getAccount,getCatalog}){
    if(!dataPromise)dataPromise=fetch('data/growth.json').then(r=>{if(!r.ok)throw new Error('육성 자료를 불러오지 못했습니다.');return r.json();}).catch(e=>{dataPromise=null;throw e;});
    const [dataset,events]=await Promise.all([dataPromise,fetch('data/events.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error();return r.json();}).catch(()=>null)]);
    if(current!==ticket||!element.isConnected)return;data=dataset;snapshot=events;loadPlan();paint();
-  }catch(e){if(current===ticket)element.innerHTML='<p role="alert">'+esc(e.message)+'</p><button type="button" data-growth="retry">다시 시도</button>';}
+  }catch(e){if(current===ticket){element.innerHTML='<p role="alert">'+esc(e.message)+'</p><button type="button" data-growth="retry">다시 시도</button>';element.querySelector('[data-growth=retry]').addEventListener('click',()=>render(element));}}
  }
  function paint(){
   if(!view?.isConnected||key!==storageKey())return;
@@ -53,7 +54,7 @@ export function initGrowthPlanner({getSaved,getAccount,getCatalog}){
  }
  function activities(m){
   const candidates=activityCandidates(m.id,data,snapshot),today=candidates.filter(c=>['ongoing','day'].includes(c.availability.code)).length,name=data.materials.find(x=>x.id===m.id)?.name||m.id;
-  return '<section class="growth-resource"><h4>'+esc(name)+' · '+fmt(m.missing)+' 부족</h4><p class="growth-note">'+(today?'공식 공지 기준 오늘 기간·개최일에 해당하는 후보 '+today+'개. 실제 입장 조건과 시각은 게임에서 확인해 주세요.':'현재 공지에서 오늘 개최를 확인한 획득처가 없습니다. 아래는 다른 일정 또는 개방 미확인인 후보입니다.')+'</p>'+(candidates.length?'<p class="growth-note">공식 보상에 명시된 획득처 '+candidates.length+'개 · 일정 상태순, 같은 상태는 표시 통솔력순. 최대 5개 표시. 드롭 효율 순위가 아닙니다.</p><details open><summary>획득처 보기</summary>'+candidates.slice(0,5).map(d=>'<article class="growth-destination"><span class="growth-status '+d.availability.code+'">'+esc(d.availability.label)+'</span><strong>'+esc(d.mapName)+' / '+esc(d.stageName)+'</strong><p>'+esc(d.rewardText)+'</p><small>통솔력 '+esc(d.energy??'미확인')+' · 보상 자료 확인 '+esc(d.verifiedAt.slice(0,10))+'</small><div><a href="'+esc(safeSource(d.sourceUrl))+'" target="_blank" rel="noopener noreferrer">공식 스테이지 ↗</a>'+(d.availability.notice?'<a href="'+esc(safeSource(d.availability.notice.sourceUrl))+'" target="_blank" rel="noopener noreferrer">일정 근거 공지 ↗</a>':'')+'</div></article>').join('')+'</details>':'<p>공식 한국판 보상 자료에서 연결된 획득처를 확인하지 못했습니다. 게임에서 획득 방법을 확인해 주세요.</p>')+'</section>';
+  return '<section class="growth-resource"><h4>'+esc(name)+' · '+fmt(m.missing)+' 부족</h4><p class="growth-note">'+(today?'공식 공지 기준 오늘 기간·개최일에 해당하는 후보 '+today+'개. 실제 입장 조건과 시각은 게임에서 확인해 주세요.':'현재 공지에서 오늘 개최를 확인한 획득처가 없습니다. 아래는 다른 일정 또는 개방 미확인인 후보입니다.')+'</p>'+(candidates.length?'<p class="growth-note">공식 보상에 명시된 획득처 '+candidates.length+'개 · 일정 상태순, 같은 상태는 표시 통솔력순. 최대 5개 표시. 드롭 효율 순위가 아닙니다.</p><details open><summary>획득처 보기</summary>'+candidates.slice(0,5).map(d=>'<article class="growth-destination"><span class="growth-status '+d.availability.code+'">'+esc(d.availability.label)+'</span>'+(d.availability.notice?'<p>'+esc(periodText(d.availability.notice))+'</p>':'')+'<strong>'+esc(d.mapName)+' / '+esc(d.stageName)+'</strong><p>'+esc(d.rewardText)+'</p><small>통솔력 '+esc(d.energy??'미확인')+' · 보상 자료 확인 '+esc(d.verifiedAt.slice(0,10))+'</small><div><a href="'+esc(safeSource(d.sourceUrl))+'" target="_blank" rel="noopener noreferrer">공식 스테이지 ↗</a>'+(d.availability.notice?'<a href="'+esc(safeSource(d.availability.notice.sourceUrl))+'" target="_blank" rel="noopener noreferrer">일정 근거 공지 ↗</a>':'')+'</div></article>').join('')+'</details>':'<p>공식 한국판 보상 자료에서 연결된 획득처를 확인하지 못했습니다. 게임에서 획득 방법을 확인해 주세요.</p>')+'</section>';
  }
  return {render,reset(){ticket++;key=null;plan=empty();view=null;message='';persistError='';}};
 }
