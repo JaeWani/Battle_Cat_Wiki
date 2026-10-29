@@ -1,5 +1,5 @@
 import {escapeHTML as esc} from './community-model.mjs?v=google-only-1';
-import {readGameProfile,storeGameProfile,removeGameProfile,storeProfileAvatar} from './community.mjs?v=avatar-1';
+import {readGameProfile,storeGameProfile,removeGameProfile,storeProfileAvatar} from './community.mjs?v=password-1';
 import {formatGameVersion,MAX_SAVE_BYTES} from './save-parser.mjs';
 import {groupCharacters,importTalentChoices,talentSummary} from './game-profile-model.mjs';
 import {initProfileEditor} from './profile-editor.mjs';

@@ -1,13 +1,15 @@
-import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=avatar-1';
+import {validContentPassword,initContentPasswordDialog} from './content-password.mjs';
+import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=password-1';
 import {COMMUNITY_CONFIG as config} from './community-config.mjs?v=manual-1';
 import {AUTH_PROVIDERS,BOARD_NAMES,escapeHTML as esc,validPost,safeImagePath,ratingLabel} from './community-model.mjs?v=google-only-1';
 const $=s=>document.querySelector(s),date=v=>new Date(v).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'short'});
+let passwordPrompt;
 let client,ready,session=null,me=null,providers={},siteSettings={registration_open:false,contact_email:""},inputCallback=null,requestId=0,charRequest=0;
 const state={board:'all',query:'',page:0,screen:'list',post:null,editor:null};
 const postQuery=new URLSearchParams(location.search).get('post');
 function showMessage(message,error=false){const el=$('#community-message');el.hidden=false;el.classList.toggle('noc-error',error);el.textContent=message;}
 function failure(error){showMessage(error?.message||'요청을 처리하지 못했어요. 다시 시도해 주세요.',true);}
-async function api(action,payload={}){await ready;if(!client)throw new Error('로그인 서비스를 불러오지 못했어요. 새로고침해 주세요.');const {data,error}=await client.rpc('noc_api',{action,payload});if(error)throw new Error(error.message);return data;}
+async function api(action,payload={}){await ready;if(!client)throw new Error('로그인 서비스를 불러오지 못했어요. 새로고침해 주세요.');const {data,error}=await client.rpc('noc_api',{action,payload});if(error)throw new Error(error.message);if(data?.ok===false&&data.error)throw new Error(data.error);return data;}
 function accountTitle(){const b=$('#noc-account-button');if(b)b.textContent=session?(me?.nickname||'가입 완료하기'):'로그인';$('#noc-admin-button').hidden=!me?.role;}
 async function refreshMe(){
  me=session?await api('me'):null;accountTitle();
@@ -18,7 +20,8 @@ async function refreshMe(){
 function memberRequired(){if(!session||me?.status!=='active'){renderAccount();$('#noc-account-dialog').showModal();throw new Error(!session?'로그인 후 이용할 수 있어요.':'회원 가입 또는 계정 상태를 확인해 주세요.');}}
 function boardButtons(){$('#noc-boards').innerHTML=Object.entries(BOARD_NAMES).map(([id,name])=>'<button data-noc="board" data-board="'+id+'" aria-pressed="'+(state.board===id)+'" class="'+(state.board===id?'active':'')+'">'+name+'</button>').join('');}
 function setPostURL(id){const url=new URL(location.href);if(id)url.searchParams.set('post',id);else url.searchParams.delete('post');history.replaceState(null,'',url);}
-function listView(){state.screen='list';state.post=null;setPostURL(null);renderFeed();}
+function clearEditor(){if(state.editor)delete state.editor.password;state.editor=null;}
+function listView(){clearEditor();state.screen='list';state.post=null;setPostURL(null);renderFeed();}
 async function renderFeed(){
  const ticket=++requestId;boardButtons();$('#noc-feed').innerHTML='<p class="noc-loading" role="status">게시글을 불러오는 중…</p>';
  try{
@@ -30,15 +33,16 @@ async function renderFeed(){
  }catch(error){if(ticket!==requestId)return;$('#noc-feed').innerHTML='<div class="stage-empty"><h2>게시판 연결을 확인해 주세요.</h2><p>'+esc(error.message)+'</p><button class="text-button" data-noc="list">다시 불러오기 →</button></div>';}
 }
 function commentMarkup(rows){
- return rows.slice(0,20).map(c=>'<article class="noc-comment"><div><strong>'+esc(c.nickname)+'</strong><small>'+date(c.created_at)+'</small></div><p>'+esc(c.body)+'</p><div class="noc-text-actions">'+(session?.user.id===c.author_id?'<button data-noc="edit-comment" data-id="'+c.id+'">수정</button><button data-noc="delete-comment" data-id="'+c.id+'">삭제</button>':'')+(session?'<button data-noc="report" data-target="comment" data-id="'+c.id+'">신고</button>':'')+'</div></article>').join('')||'<p class="field-help">아직 댓글이 없어요.</p>';
+ return rows.slice(0,20).map(c=>'<article class="noc-comment" data-password-set="'+(c.password_set?'true':'false')+'"><div><strong>'+esc(c.nickname)+'</strong><small>'+date(c.created_at)+'</small></div><p>'+esc(c.body)+'</p><div class="noc-text-actions">'+(session?.user.id===c.author_id?'<button data-noc="edit-comment" data-id="'+c.id+'">수정</button><button data-noc="delete-comment" data-id="'+c.id+'">삭제</button>':'')+(session?'<button data-noc="report" data-target="comment" data-id="'+c.id+'">신고</button>':'')+'</div></article>').join('')||'<p class="field-help">아직 댓글이 없어요.</p>';
 }
-function commentForm(target,id){return '<form class="noc-comment-form" data-target="'+target+'" data-id="'+esc(id)+'"><label>댓글<textarea name="body" maxlength="2000" rows="3" required placeholder="서로를 존중하며 의견을 남겨주세요."></textarea></label><button class="primary-button" type="submit">댓글 등록</button></form>';}
+function commentForm(target,id){return '<form class="noc-comment-form" data-target="'+target+'" data-id="'+esc(id)+'"><label>댓글<textarea name="body" maxlength="2000" rows="3" required placeholder="서로를 존중하며 의견을 남겨주세요."></textarea></label><label>댓글 비밀번호<input name="password" type="password" minlength="4" maxlength="72" required autocomplete="new-password" placeholder="수정·삭제에 사용할 비밀번호"></label><p class="field-help">4자 이상 · 한글 등은 UTF-8 72바이트 이하</p><button class="primary-button" type="submit">댓글 등록</button></form>';}
 async function signedImages(paths,author,id){
  const safe=paths.filter(p=>safeImagePath(p,author,id));
  const results=await Promise.all(safe.map(async path=>{const {data,error}=await client.storage.from('community-images').createSignedUrl(path,300);return error?null:{path,url:data.signedUrl};}));
  return results.filter(Boolean);
 }
 async function showPost(id){
+ clearEditor();
  const ticket=++requestId;state.screen='post';state.post=id;setPostURL(id);$('#noc-feed').innerHTML='<p role="status">게시글을 불러오는 중…</p>';
  try{
   const [p,comments]=await Promise.all([api('post',{id}),api('comments',{post_id:id,page:0})]);if(ticket!==requestId)return;
@@ -48,10 +52,17 @@ async function showPost(id){
 }
 async function startEditor(id){
  memberRequired();let p;
- if(id){p=await api('post',{id});if(p.author_id!==session.user.id)throw new Error('내 게시글만 수정할 수 있어요.');}
- else{const board=state.board==='all'?'free':state.board;const draft=await api('create_post',{board});p={...draft,board,title:'',body:'',images:[],author_id:session.user.id};}
+ if(id){
+  p=await api('post',{id});if(p.author_id!==session.user.id)throw new Error('내 게시글만 수정할 수 있어요.');
+  const password=await passwordPrompt({title:p.password_set?'게시글 수정 비밀번호':'기존 게시글 비밀번호 설정',setup:!p.password_set,submit:async({password})=>{await api('check_content_password',{target:'post',id,password,initialize_password:!p.password_set});return password;}});
+  if(password==null)return;p={...p,password};
+ }else{
+  const board=state.board==='all'?'free':state.board;
+  p=await passwordPrompt({title:'게시글 비밀번호 설정',setup:true,submit:async({password})=>{const draft=await api('create_post',{board,password});return {...draft,board,title:'',body:'',images:[],author_id:session.user.id,password,password_set:true};}});
+  if(!p)return;
+ }
  state.screen='edit';state.editor=p;
- $('#noc-feed').innerHTML='<form id="noc-editor"><button class="text-button" type="button" data-noc="list">← 목록으로</button><h2>게시글 작성</h2><p class="field-help">'+BOARD_NAMES[p.board]+' · 본문에는 HTML이 실행되지 않아요.</p><label>제목<input name="title" value="'+esc(p.title)+'" minlength="2" maxlength="100" required></label><label>본문<textarea name="body" rows="12" minlength="2" maxlength="20000" required>'+esc(p.body)+'</textarea></label><label>사진 첨부<input type="file" id="noc-image-input" accept="image/jpeg,image/png,image/webp" multiple></label><p class="field-help">총 3장 · 업로드 시 WebP로 변환 · 장당 최대 500KB · 원본 파일은 장당 8MB 이하</p><div id="noc-editor-images"></div><div class="noc-form-actions"><button class="primary-button" type="submit">게시하기</button><button type="button" class="text-button" data-noc="list">작성 중단</button></div></form>';
+ $('#noc-feed').innerHTML='<form id="noc-editor"><button class="text-button" type="button" data-noc="list">← 목록으로</button><h2>'+(id?'게시글 수정':'게시글 작성')+'</h2><p class="field-help">수정·삭제 비밀번호를 확인했습니다.</p><p class="field-help">'+BOARD_NAMES[p.board]+' · 본문에는 HTML이 실행되지 않아요.</p><label>제목<input name="title" value="'+esc(p.title)+'" minlength="2" maxlength="100" required></label><label>본문<textarea name="body" rows="12" minlength="2" maxlength="20000" required>'+esc(p.body)+'</textarea></label><label>사진 첨부<input type="file" id="noc-image-input" accept="image/jpeg,image/png,image/webp" multiple></label><p class="field-help">총 3장 · 업로드 시 WebP로 변환 · 장당 최대 500KB · 원본 파일은 장당 8MB 이하</p><div id="noc-editor-images"></div><div class="noc-form-actions"><button class="primary-button" type="submit">게시하기</button><button type="button" class="text-button" data-noc="list">작성 중단</button></div></form>';
  await renderEditorImages();
 }
 async function renderEditorImages(){
@@ -72,6 +83,7 @@ async function imageBlob(file){
 }
 async function uploadImages(files){
  memberRequired();if(!state.editor)throw new Error('게시글부터 작성해 주세요.');
+ await api('check_content_password',{target:'post',id:state.editor.id,password:state.editor.password});
  if(state.editor.images.length+files.length>3)throw new Error('이미지는 총 3장까지 첨부할 수 있어요.');
  for(const file of files){const blob=await imageBlob(file),path=session.user.id+'/'+state.editor.id+'/'+crypto.randomUUID()+'.webp';const {error}=await client.storage.from('community-images').upload(path,blob,{contentType:'image/webp',upsert:false});if(error)throw new Error(error.message);}
  await renderEditorImages();showMessage('사진을 첨부했어요. 게시하기를 눌러 글을 저장해 주세요.');
@@ -140,7 +152,7 @@ function bindEvents(){
     const url=new URL(location.href);url.search='';url.hash='community';
     const {error}=await client.auth.signInWithOAuth({provider:button.dataset.provider,options:{redirectTo:url.href}});if(error)throw error;return;
    }
-   if(action==='logout'){const {error}=await client.auth.signOut();if(error)throw error;session=null;await refreshMe();return;}
+   if(action==='logout'){passwordPrompt.reset();clearEditor();const {error}=await client.auth.signOut();if(error)throw error;session=null;await refreshMe();return;}
    if(action==='board'){state.board=button.dataset.board;state.page=0;listView();return;}
    if(action==='list'){listView();return;}
    if(action==='page'){state.page=Number(button.dataset.page);await renderFeed();return;}
@@ -148,18 +160,24 @@ function bindEvents(){
    if(action==='compose'||action==='edit-post'){$('#noc-account-dialog').close();await startEditor(button.dataset.id);return;}
    if(action==='remove-image'){
     memberRequired();if(!safeImagePath(button.dataset.path,session.user.id,state.editor.id))throw new Error('첨부 경로를 확인해 주세요.');
+    await api('check_content_password',{target:'post',id:state.editor.id,password:state.editor.password});
     const {error}=await client.storage.from('community-images').remove([button.dataset.path]);if(error)throw error;await renderEditorImages();return;
    }
    if(action==='delete-post'){
-    memberRequired();inputDialog('게시글 삭제','삭제하려면 아래에 삭제를 입력해 주세요.','',async value=>{
-     if(value!=='삭제')throw new Error('삭제를 입력해 주세요.');const p=await api('post',{id:button.dataset.id});await api('delete_post',{id:p.id});
+    memberRequired();const p=await api('post',{id:button.dataset.id});
+    await passwordPrompt({title:p.password_set?'게시글 삭제 비밀번호':'기존 게시글 비밀번호 설정 후 삭제',setup:!p.password_set,submit:async({password})=>{
+     await api('delete_post',{id:p.id,password,initialize_password:!p.password_set});
      if(p.images.length){const {error}=await client.storage.from('community-images').remove(p.images);if(error)showMessage('글은 삭제됐지만 사진 정리는 다시 확인해야 해요.',true);}
-     listView();
-    });return;
+     listView();return true;
+    }});return;
    }
    if(action==='report'){memberRequired();inputDialog('신고 접수','신고 사유를 5자 이상 입력해 주세요. 개인정보는 적지 마세요.','',async reason=>{await api('report',{target:button.dataset.target,id:button.dataset.id,reason});showMessage('신고를 접수했어요.');});return;}
-   if(action==='edit-comment'){memberRequired();const body=button.closest('.noc-comment').querySelector('p').textContent;inputDialog('댓글 수정','2,000자 이내로 수정해 주세요.',body,async value=>{await api('edit_comment',{id:button.dataset.id,body:value});await refreshComments();});return;}
-   if(action==='delete-comment'){memberRequired();inputDialog('댓글 삭제','삭제하려면 삭제를 입력해 주세요.','',async value=>{if(value!=='삭제')throw new Error('삭제를 입력해 주세요.');await api('delete_comment',{id:button.dataset.id});await refreshComments();});return;}
+   if(action==='edit-comment'||action==='delete-comment'){
+    memberRequired();const item=button.closest('.noc-comment'),setup=item.dataset.passwordSet!=='true',editing=action==='edit-comment';
+    await passwordPrompt({title:(setup?'기존 댓글 비밀번호 설정 · ':'댓글 비밀번호 · ')+(editing?'수정':'삭제'),setup,body:editing?item.querySelector('p').textContent:null,submit:async({password,body})=>{
+     await api(editing?'edit_comment':'delete_comment',{id:button.dataset.id,password,initialize_password:setup,...(editing?{body}:{})});await refreshComments();return true;
+    }});return;
+   }
    if(action==='rate'){memberRequired();await api('rate',{key:button.dataset.key,stars:button.dataset.stars?Number(button.dataset.stars):null});await refreshComments();return;}
    if(action==='more-comments'){
     const target=button.dataset.target==='post'?$('#noc-post-comments'):$('#noc-character-comments'),page=Number(target.dataset.page)+1;
@@ -183,20 +201,21 @@ function bindEvents(){
     if(!siteSettings.registration_open&&!me?.role)throw new Error('정식 가입 안내를 준비 중이에요.');
     await api('onboard',{nickname:form.elements.nickname.value,age_confirmed:form.elements.age.checked,terms_accepted:form.elements.terms.checked,privacy_accepted:form.elements.privacy.checked,policy_version:POLICY_VERSION});await refreshMe();showMessage('가입이 완료됐어요.');
    }else if(form.id==='noc-editor'){
-    memberRequired();const values=validPost(form.elements.title.value,form.elements.body.value);const result=await api('save_post',{id:state.editor.id,...values});state.editor=null;await showPost(result.id);await refreshMe();
-   }else{memberRequired();await api('comment',{body:form.elements.body.value,...(form.dataset.target==='post'?{post_id:form.dataset.id}:{character_key:form.dataset.id})});form.reset();await refreshComments();}
+    memberRequired();const values=validPost(form.elements.title.value,form.elements.body.value);const result=await api('save_post',{id:state.editor.id,password:state.editor.password,...values});clearEditor();await showPost(result.id);await refreshMe();
+   }else{memberRequired();await api('comment',{body:form.elements.body.value,password:validContentPassword(form.elements.password.value),...(form.dataset.target==='post'?{post_id:form.dataset.id}:{character_key:form.dataset.id})});form.reset();await refreshComments();}
   }catch(error){failure(error);let target=form.querySelector('.noc-inline-error');if(!target){target=document.createElement('p');target.className='noc-inline-error';target.setAttribute('role','alert');form.append(target);}target.textContent=error.message;}
   finally{if(button.isConnected)button.disabled=false;}
  });
  $('#noc-image-input')?.addEventListener('change',()=>{});
  document.addEventListener('change',async event=>{if(event.target.id!=='noc-image-input')return;const input=event.target;input.disabled=true;try{await uploadImages([...input.files]);}catch(error){failure(error);}finally{input.disabled=false;input.value='';}});
- let timer;$('#noc-search').addEventListener('input',event=>{clearTimeout(timer);state.query=event.target.value;state.page=0;timer=setTimeout(()=>{state.screen='list';renderFeed();},250);});
+ let timer;$('#noc-search').addEventListener('input',event=>{clearTimeout(timer);state.query=event.target.value;state.page=0;timer=setTimeout(()=>{clearEditor();state.screen='list';renderFeed();},250);});
 }
 export function initCommunity(){
- boardButtons();bindEvents();
+ passwordPrompt=initContentPasswordDialog();boardButtons();bindEvents();
+ window.addEventListener('hashchange',()=>{if(location.hash!=='#community'){passwordPrompt.reset();if(state.editor)listView();}});
  ready=(async()=>{
   const sdk=await import(config.sdkURL);client=sdk.createClient(config.url,config.publishableKey,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-  client.auth.onAuthStateChange((event,nextSession)=>{session=nextSession;setTimeout(()=>refreshMe().catch(failure),0);});
+  client.auth.onAuthStateChange((event,nextSession)=>{if(session?.user?.id!==nextSession?.user?.id){passwordPrompt.reset();clearEditor();document.querySelectorAll('.noc-comment-form input[type=password]').forEach(i=>i.value='');if($('#noc-editor'))listView();}session=nextSession;setTimeout(()=>refreshMe().catch(failure),0);});
   const {data,error}=await client.auth.getSession();if(error)throw error;session=data.session;
   try{const response=await fetch(config.url+'/auth/v1/settings',{headers:{apikey:config.publishableKey}});if(response.ok)providers=(await response.json()).external||{};}catch{/* Provider availability stays disabled until verified. */}
   return client;

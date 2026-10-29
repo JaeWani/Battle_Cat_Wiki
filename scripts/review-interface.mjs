@@ -10,6 +10,18 @@ await mkdir(out,{recursive:true});
 const mime={'.html':'text/html','.mjs':'text/javascript','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'};
 const server=http.createServer(async(req,res)=>{
  try{
+  const fixturePath=new URL(req.url,'http://localhost').pathname;
+  if(fixturePath==='/__community_test'){
+   const html=(await readFile(path.join(root,'index.html'),'utf8')).replace(/<script type="module" src="js\/app.mjs[^>]*><\/script>/,'<script type="module">import {initCommunity} from "./js/__community_test.mjs";document.querySelector("#community-view").hidden=false;initCommunity();</script>');
+   res.writeHead(200,{'Content-Type':'text/html'}).end(html);return;
+  }
+  if(fixturePath==='/js/__community_test.mjs'){
+   const source=(await readFile(path.join(root,'js/community.mjs'),'utf8')).replace(/from '\.\/community-config.mjs[^']*'/,"from '/__community_config.mjs'");
+   res.writeHead(200,{'Content-Type':'text/javascript'}).end(source);return;
+  }
+  if(fixturePath==='/__community_config.mjs'){res.writeHead(200,{'Content-Type':'text/javascript'}).end('export const COMMUNITY_CONFIG={url:"/__community_api",sdkURL:"/__community_sdk.mjs"};');return;}
+  if(fixturePath==='/__community_sdk.mjs'){res.writeHead(200,{'Content-Type':'text/javascript'}).end(await readFile('tests/helpers/community-browser-fixture.mjs','utf8'));return;}
+  if(fixturePath==='/__community_api/auth/v1/settings'){res.writeHead(200,{'Content-Type':'application/json'}).end('{"external":{"google":true}}');return;}
   if(new URL(req.url,'http://localhost').pathname==='/__avatar_test'){
    const index=await readFile(path.join(root,'index.html'),'utf8'),dialog=index.match(/<dialog id="my-avatar-dialog"[\s\S]*?<\/dialog>/)[0];
    const html='<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="command.css"><link rel="stylesheet" href="profile-avatar.css"><button data-avatar-open>Open avatar test</button><output id="avatar-test-saved">c0-0</output>'+dialog+`<script type="module">
@@ -137,6 +149,56 @@ try{
   assert.equal(await evaluate("document.querySelector('#avatar-test-saved').textContent"),key,'Avatar save adapter received wrong identifier');
  }
  console.log('Verified avatar picker: ally/enemy search and preview, desktop/mobile layout, anonymous gate, cancel and ally/enemy/default save roundtrips with an isolated adapter.');
+ // Use the production community module and forms with an isolated authenticated adapter.
+ await command('Emulation.setDeviceMetricsOverride',{width:390,height:1000,deviceScaleFactor:1,mobile:true},sessionId);
+ await command('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/__community_test#community'},sessionId);
+ const waitFor=async expression=>{for(let i=0;i<80;i++){if(await evaluate(expression))return;await new Promise(r=>setTimeout(r,50));}throw new Error('Community UI timeout: '+expression);};
+ await waitFor('!!globalThis.nocFixture && !!document.querySelector("#noc-feed [data-noc=compose]")');
+ await evaluate('document.querySelector("#noc-feed [data-noc=compose]").click()');
+ await waitFor('document.querySelector("#noc-password-dialog").open');
+ assert.ok(await evaluate('document.querySelector("#noc-password-form").elements.password.required'),'Creation password optional');
+ await evaluate('(()=>{const f=document.querySelector("#noc-password-form");f.elements.password.value="test-pass";f.elements.confirm.value="different";f.requestSubmit();})()');
+ await waitFor('!!document.querySelector("#noc-password-error").textContent');
+ assert.equal(await evaluate('nocFixture.calls.filter(c=>c.action==="create_post").length'),0,'Mismatched confirmation created draft');
+ await evaluate('(()=>{const f=document.querySelector("#noc-password-form");f.elements.confirm.value="test-pass";f.requestSubmit();})()');
+ await waitFor('!!document.querySelector("#noc-editor")');
+ assert.equal(await evaluate('document.querySelector("#noc-password-form").elements.password.value'),'','Closed dialog retained password');
+ await evaluate('(()=>{const f=document.querySelector("#noc-editor");f.elements.title.value="브라우저 테스트";f.elements.body.value="테스트 본문";f.requestSubmit();})()');
+ await waitFor('!!document.querySelector(".noc-comment-form")');
+ assert.ok(await evaluate('document.querySelector(".noc-comment-form").elements.password.required'),'Comment password optional');
+ await evaluate('(()=>{const f=document.querySelector(".noc-comment-form");f.elements.body.value="등록 댓글";f.requestSubmit();})()');
+ assert.equal(await evaluate('nocFixture.calls.filter(c=>c.action==="comment").length'),0,'Blank comment password submitted');
+ await evaluate('(()=>{const f=document.querySelector(".noc-comment-form");f.elements.password.value="test-pass";f.requestSubmit();})()');
+ await waitFor('!!document.querySelector(".noc-comment [data-noc=edit-comment]")');
+ assert.equal(await evaluate('document.querySelector(".noc-comment-form").elements.password.value'),'','Comment password retained after creation');
+ await evaluate('document.querySelector("[data-noc=edit-comment]").click()');
+ await waitFor('document.querySelector("#noc-password-dialog").open');
+ assert.ok(await evaluate('document.querySelector("#noc-password-confirm-row").hidden'),'Edit unexpectedly resets password');
+ await evaluate('(()=>{const f=document.querySelector("#noc-password-form");f.elements.password.value="wrong-pass";f.elements.body.value="수정 댓글";f.requestSubmit();})()');
+ await waitFor('!!document.querySelector("#noc-password-error").textContent');
+ assert.equal(await evaluate('document.querySelector(".noc-comment p").textContent'),'등록 댓글','Wrong password changed visible comment');
+ assert.ok(await evaluate('document.querySelector("#noc-password-dialog").open'),'Failed verification closed dialog');
+ assert.equal(await evaluate('(()=>{const d=document.querySelector("#noc-password-dialog");return d.scrollWidth>d.clientWidth+1;})()'),false,'Password dialog mobile overflow');
+ const passwordShot=await command('Page.captureScreenshot',{format:'png',captureBeyondViewport:false,fromSurface:true},sessionId);await writeFile(path.join(out,'content-password-390.png'),Buffer.from(passwordShot.data,'base64'));
+ await evaluate('(()=>{const f=document.querySelector("#noc-password-form");f.elements.password.value="test-pass";f.requestSubmit();})()');
+ await waitFor('!document.querySelector("#noc-password-dialog").open');
+ assert.equal(await evaluate('document.querySelector(".noc-comment p").textContent'),'수정 댓글');
+ await evaluate('document.querySelector("[data-noc=delete-comment]").click()');await waitFor('document.querySelector("#noc-password-dialog").open');
+ await evaluate('document.querySelector("#noc-password-form").elements.password.value="test-pass";document.querySelector("#noc-password-form").requestSubmit()');
+ await waitFor('!document.querySelector(".noc-comment [data-noc=delete-comment]")');
+ await evaluate('document.querySelector("[data-noc=edit-post]").click()');await waitFor('document.querySelector("#noc-password-dialog").open');
+ await evaluate('document.querySelector("#noc-password-form").elements.password.value="test-pass";document.querySelector("#noc-password-cancel").click()');
+ assert.equal(await evaluate('document.querySelector("#noc-password-form").elements.password.value'),'','Cancel retained password');
+ assert.equal(await evaluate('!!document.querySelector("#noc-editor")'),false,'Canceled verification opened editor');
+ await evaluate('document.querySelector("[data-noc=delete-post]").click()');await waitFor('document.querySelector("#noc-password-dialog").open');
+ await evaluate('document.querySelector("#noc-password-form").elements.password.value="test-pass";document.querySelector("#noc-password-form").requestSubmit()');
+ await waitFor('!document.querySelector("#noc-password-dialog").open && !document.querySelector(".noc-post-detail")');
+ await evaluate('document.querySelector("#noc-feed [data-noc=compose]").click()');await waitFor('document.querySelector("#noc-password-dialog").open');
+ await evaluate('document.querySelector("#noc-password-form").elements.password.value="test-pass";nocFixture.changeAccount()');
+ await waitFor('!document.querySelector("#noc-password-dialog").open');
+ assert.equal(await evaluate('document.querySelector("#noc-password-form").elements.password.value'),'','Account change retained password');
+ assert.equal(await evaluate('Object.values(localStorage).some(v=>v.includes("test-pass")) || location.href.includes("test-pass")'),false,'Password persisted outside memory');
+ console.log('Verified production post/comment forms: password and confirmation gates, create/save/edit/delete, wrong-password retry, mobile layout, cancel/account-change clearing and no URL/localStorage persistence with an isolated adapter.');
  await command('Target.closeTarget',{targetId});
  assert.ok(report.every(r=>r.issues.length===0),'Interface layout failures; inspect interface-review/report.json');
 }catch(error){fatal=error;}
