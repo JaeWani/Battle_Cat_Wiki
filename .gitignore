@@ -9,3 +9,6 @@ public/data/stages.json
 
 artifacts/
 supabase/.temp/
+
+# Rebuilt from the versioned growth archive by npm run assets.
+/public/data/growth.json

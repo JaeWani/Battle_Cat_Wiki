@@ -11,6 +11,9 @@ const mime={'.html':'text/html','.mjs':'text/javascript','.js':'text/javascript'
 const server=http.createServer(async(req,res)=>{
  try{
   const fixturePath=new URL(req.url,'http://localhost').pathname;
+  if(fixturePath==='/__growth_test'){
+   res.writeHead(200,{'Content-Type':'text/html'}).end('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="growth.css"><button id="growth-switch">Switch account</button><main id="growth-fixture"></main><script type="module">import {initGrowthPlanner} from "./js/growth-planner.mjs";const cats=await fetch("data/cats.json").then(r=>r.json());let account={id:"growth-ui-A"};const planner=initGrowthPlanner({getCatalog:()=>cats,getAccount:()=>account,getSaved:()=>null});document.querySelector("#growth-switch").onclick=()=>{account={id:account.id==="growth-ui-A"?"growth-ui-B":"growth-ui-A"};planner.reset();planner.render(document.querySelector("#growth-fixture"));};planner.render(document.querySelector("#growth-fixture"));</script>');return;
+  }
   if(fixturePath==='/__community_test'){
    const html=(await readFile(path.join(root,'index.html'),'utf8')).replace(/<script type="module" src="js\/app.mjs[^>]*><\/script>/,'<script type="module">import {initCommunity} from "./js/__community_test.mjs";document.querySelector("#community-view").hidden=false;initCommunity();</script>');
    res.writeHead(200,{'Content-Type':'text/html'}).end(html);return;
@@ -202,6 +205,37 @@ try{
  assert.equal(await evaluate('document.querySelector("#noc-password-form").elements.password.value'),'','Account change retained password');
  assert.equal(await evaluate('Object.values(localStorage).some(v=>v.includes("test-pass")) || location.href.includes("test-pass")'),false,'Password persisted outside memory');
  console.log('Verified production post/comment forms: password and confirmation gates, create/save/edit/delete, wrong-password retry, mobile layout, cancel/account-change clearing and no URL/localStorage persistence with an isolated adapter.');
+ // Growth plans use the real profile tab, source data and browser storage.
+ for(const width of [1440,390]){
+  await command('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<600},sessionId);
+  await command('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/#profile'},sessionId);
+  await waitFor('document.querySelector("#footer-version")?.textContent.startsWith("JP ") && !!document.querySelector("[data-profile-tab=growth]")');
+  await evaluate('localStorage.removeItem("noc-growth-v1:guest");document.querySelector("[data-profile-tab=growth]").click()');
+  await waitFor('!!document.querySelector("#growth-goal-form")');
+  await evaluate('(()=>{const f=document.querySelector("#growth-goal-form");f.elements.id.value="32";f.elements.id.dispatchEvent(new Event("change"));f.elements.currentLevel.value="29";f.elements.currentForm.value="1";f.elements.targetLevel.value="30";f.elements.targetForm.value="2";f.requestSubmit();})()');
+  assert.equal(await evaluate('document.querySelectorAll(".growth-goal").length'),1,'Growth goal not created');
+  assert.ok((await evaluate('document.querySelector(".growth-table").textContent')).includes('1,394,000'),'Level plus evolution XP missing');
+  await evaluate('(()=>{const f=document.querySelector("#growth-stock-form");f.elements.xp.value="500000";f.elements.namedItem("35").value="2";f.requestSubmit();})()');
+  assert.equal(await evaluate('JSON.parse(localStorage.getItem("noc-growth-v1:guest")).stock.xp'),500000,'Material stock not persisted');
+  assert.ok(await evaluate('document.querySelector(".growth-destination a")?.href.startsWith("https://ponosgames.com/")'),'Official destination link missing');
+  assert.equal(await evaluate('document.documentElement.scrollWidth>innerWidth+1'),false,'Growth planner page overflow');
+  await evaluate('document.querySelector(".growth-panel").scrollIntoView({block:"start"});window.scrollBy(0,-130)');
+  const shot=await command('Page.captureScreenshot',{format:'png',captureBeyondViewport:false,fromSurface:true},sessionId);await writeFile(path.join(out,'growth-planner-'+width+'.png'),Buffer.from(shot.data,'base64'));
+  await command('Page.reload',{},sessionId);
+  await waitFor('document.querySelector("#footer-version")?.textContent.startsWith("JP ") && !!document.querySelector("[data-profile-tab=growth]")');
+  await evaluate('document.querySelector("[data-profile-tab=growth]").click()');await waitFor('!!document.querySelector(".growth-goal")');
+  assert.equal(await evaluate('document.querySelector("#growth-stock-form").elements.xp.value'),'500000','Reload lost stock');
+  await evaluate('document.querySelector("[data-growth=remove]").click()');assert.equal(await evaluate('document.querySelectorAll(".growth-goal").length'),0,'Remove goal failed');
+  assert.equal(await evaluate('JSON.parse(localStorage.getItem("noc-growth-v1:guest")).stock.xp'),500000,'Removing a goal spent inventory');
+ }
+ await command('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/__growth_test'},sessionId);await waitFor('!!document.querySelector("#growth-goal-form")');
+ await evaluate('(()=>{const f=document.querySelector("#growth-goal-form");f.elements.id.value="32";f.elements.id.dispatchEvent(new Event("change"));f.elements.currentLevel.value="29";f.elements.targetLevel.value="30";f.requestSubmit();})()');
+ await evaluate('document.querySelector("#growth-switch").click()');await waitFor('!!document.querySelector("#growth-goal-form")');assert.equal(await evaluate('document.querySelectorAll(".growth-goal").length'),0,'Plan leaked between accounts');
+ await evaluate('document.querySelector("#growth-switch").click()');await waitFor('!!document.querySelector(".growth-goal")');
+ assert.equal(await evaluate('document.querySelectorAll(".growth-goal").length'),1,'Account switch lost original plan');
+ await evaluate('Storage.prototype.setItem=function(){throw new DOMException("Quota exceeded","QuotaExceededError")};document.querySelector("#growth-stock-form").requestSubmit()');
+ assert.ok((await evaluate('document.querySelector("#growth-feedback").textContent')).includes('저장에 실패'),'Storage failure was silent');
+ console.log('Verified growth planner: production desktop/mobile profile tab, evolution/level costs, stock and deficit persistence, reload, non-destructive removal, official source links, account isolation and storage failure feedback.');
  await command('Target.closeTarget',{targetId});
  assert.ok(report.every(r=>r.issues.length===0),'Interface layout failures; inspect interface-review/report.json');
 }catch(error){fatal=error;}

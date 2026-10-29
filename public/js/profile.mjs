@@ -1,3 +1,4 @@
+import {initGrowthPlanner} from './growth-planner.mjs';
 import {escapeHTML as esc} from './community-model.mjs?v=google-only-1';
 import {readGameProfile,storeGameProfile,removeGameProfile,storeProfileAvatar} from './community.mjs?v=password-1';
 import {formatGameVersion,MAX_SAVE_BYTES} from './save-parser.mjs';
@@ -7,6 +8,7 @@ const $=s=>document.querySelector(s),rarities=['기본','EX','레어','슈퍼 �
 const regions={kr:'한국판',jp:'일본판',en:'영문판',tw:'대만판'};
 import {avatarChoices,resolveAvatar} from './avatar-model.mjs';
 import {initAvatarPicker} from './profile-avatar.mjs';
+let growthPlanner=null;
 let avatarCatalog=[],avatarPicker=null;
 let groups=[],optionsPromise=null,editor=null,loading=false,loadError=false;
 let catalog=[],unitMap=new Map(),tab='cats',query='',rarity='all',saved=null,staged=null,omitted=0,expected=null,busy=false,worker=null,timer=null,job=0,accountGeneration=0,loadedFor=null,status='',consent=false;
@@ -30,6 +32,8 @@ function renderBody(){
  const target=$('#my-body');if(!target)return;
  if(tab==='cats'){
   target.innerHTML='<div class="my-collection-title"><h2>보유 캐릭터</h2><span class="my-example-label">'+(saved?sourceLabel():'미등록')+'</span></div><div class="my-toolbar"><label class="searchbox"><span aria-hidden="true">⌕</span><input id="my-search" type="search" placeholder="보유 캐릭터 이름 검색" aria-label="보유 캐릭터 이름 검색" value="'+esc(query)+'"></label><select id="my-rarity" aria-label="보유 캐릭터 희귀도"><option value="all">전체 희귀도</option>'+rarities.map((r,i)=>'<option value="'+i+'" '+(rarity===String(i)?'selected':'')+'>'+r+'</option>').join('')+'</select></div><div class="my-list-caption"><span id="my-result-count"></span><span>기본 레벨 + 플러스 레벨</span></div><div class="my-cat-grid" id="my-inventory"></div>';renderInventory();
+ }else if(tab==='growth'){
+  growthPlanner?.render(target);
  }else if(tab==='progress'){
   target.innerHTML='<div class="my-collection-title"><h2>메인 챕터 진행</h2><span class="my-example-label">'+(saved?sourceLabel():'미등록')+'</span></div><div class="my-progress-grid">'+['세계편','미래편','우주편'].map((name,i)=>'<article><h3>'+name+'</h3>'+[0,1,2].map(n=>{const p=saved&&saved.progressKnown!==false?saved.progress[i*3+n]:null;return '<div class="my-chapter-row"><strong>'+(n+1)+'장</strong><span>'+(p?p.cleared+' / 48 클리어':'—')+'</span><small>'+(p?'최고급 보물 '+p.gold+' / 48':'데이터 없음')+'</small></div>';}).join('')+'</article>').join('')+'</div><p class="my-section-note">메인 챕터 진행은 가져온 파일 기준입니다. 직접 설정은 기존 진행 기록을 유지합니다. 본능 기록은 보유 캐릭터에서 확인할 수 있습니다.</p>';
  }else{
@@ -44,7 +48,7 @@ function render(){
  '<div class="my-main"><section class="my-import-card"><div class="my-import-copy"><span class="my-source-type">MY GAME DATA</span><h2>게임 데이터</h2><p>'+(saved?esc(regions[saved.region])+' · '+sourceLabel()+(saved.gameVersion?' · '+formatGameVersion(saved.gameVersion):''):'연결된 데이터 없음')+'</p></div><div class="my-import-control"><button class="my-import-button my-manual-button" data-profile="manual" '+(loading?'disabled':'')+'>캐릭터 직접 설정 <span>↗</span></button><button class="my-import-button" data-profile="import">'+(saved?'다시 가져오기':'데이터 가져오기')+' <span>↗</span></button><span class="my-import-note">원본 파일 업로드 없음 · 최대 8MB</span></div></section>'+
  '<div class="my-stat-strip"><div><span>보유 캐릭터</span><strong>'+(saved?total:'—')+'<small>종</small></strong><span class="my-stat-note">저장된 캐릭터</span></div><div><span>최고 총 레벨</span><strong>'+(highest??'—')+'<small>Lv.</small></strong><span class="my-stat-note">기본 + 플러스</span></div><div><span>데이터 업데이트</span><strong class="my-update-label">'+(saved?esc(date(saved.updated_at)):'불러오기 전')+'</strong><span class="my-stat-note">'+(saved?'가져온 시점의 정보':'자동 동기화 아님')+'</span></div></div>'+
  '<div class="my-game-actions">'+(account.signedIn?'<button class="text-button" data-profile="reload">저장 정보 새로고침</button>':'<button class="text-button" data-noc="account">Google 로그인</button>')+(saved?'<button class="text-button my-delete-game" data-profile="delete">게임 데이터 삭제</button>':'')+'</div>'+
- '<div class="my-tabs" role="tablist" aria-label="내 정보 분류">'+[['cats','보유 캐릭터'],['progress','게임 진행'],['activity','내 활동']].map(([id,name])=>'<button id="my-tab-'+id+'" role="tab" aria-selected="'+(tab===id)+'" aria-controls="my-body" tabindex="'+(tab===id?'0':'-1')+'" data-profile-tab="'+id+'" class="'+(tab===id?'active':'')+'">'+name+(id==='cats'&&saved?'<span>'+total+'</span>':'')+'</button>').join('')+'</div><section id="my-body" role="tabpanel" aria-labelledby="my-tab-'+tab+'"></section><p class="my-bottom-note">등록한 정보는 사용자가 제공한 기록이며 게임 서버 인증 자료가 아닙니다. 본능 기록은 전투 계산기에 아직 적용되지 않습니다.</p></div></div>';
+ '<div class="my-tabs" role="tablist" aria-label="내 정보 분류">'+[['cats','보유 캐릭터'],['progress','게임 진행'],['growth','육성 목표'],['activity','내 활동']].map(([id,name])=>'<button id="my-tab-'+id+'" role="tab" aria-selected="'+(tab===id)+'" aria-controls="my-body" tabindex="'+(tab===id?'0':'-1')+'" data-profile-tab="'+id+'" class="'+(tab===id?'active':'')+'">'+name+(id==='cats'&&saved?'<span>'+total+'</span>':'')+'</button>').join('')+'</div><section id="my-body" role="tabpanel" aria-labelledby="my-tab-'+tab+'"></section><p class="my-bottom-note">등록한 정보는 사용자가 제공한 기록이며 게임 서버 인증 자료가 아닙니다. 본능 기록은 전투 계산기에 아직 적용되지 않습니다.</p></div></div>';
  renderBody();
 }
 function stopWorker(){job++;if(worker)worker.terminate();worker=null;clearTimeout(timer);busy=false;}
@@ -89,12 +93,13 @@ function selectTab(next){
 }
 export function updateProfileCatalog(cats,enemies=[]){avatarCatalog=avatarChoices(cats,enemies);catalog=cats;unitMap=new Map(catalog.map(c=>[c.id+'-'+c.form,c]));render();ensureGroups().then(render).catch(e=>statusText(e.message));}
 export function initProfile(){
+ growthPlanner=initGrowthPlanner({getSaved:()=>saved,getAccount:()=>account,getCatalog:()=>catalog});
  avatarPicker=initAvatarPicker({getChoices:()=>avatarCatalog,getAccount:()=>account,onSave:async key=>{await storeProfileAvatar(key);status='프로필 사진을 저장했습니다.';render();}});
  editor=initProfileEditor({getSaved:()=>saved,getGroups:async()=>{if(loading||loadError)throw new Error('저장된 정보를 먼저 새로고침해 주세요.');return ensureGroups();},getAccount:()=>account,onSave:async(snapshot,expected)=>{const id=account.id;const result=await storeGameProfile(snapshot,expected);if(id!==account.id)throw new Error('계정이 변경되었습니다. 다시 로그인해 주세요.');saved=result;status='캐릭터 설정을 저장했습니다.';render();}});
  render();
  document.addEventListener('noc:account-state',e=>{
   const changed=account.id!==e.detail.id;account=e.detail;
-  if(changed){avatarPicker.reset();editor.reset();loading=false;loadError=false;accountGeneration++;stopWorker();staged=null;saved=null;loadedFor=null;status='';$('#my-import-dialog')?.close();}
+  if(changed){growthPlanner.reset();avatarPicker.reset();editor.reset();loading=false;loadError=false;accountGeneration++;stopWorker();staged=null;saved=null;loadedFor=null;status='';$('#my-import-dialog')?.close();}
   render();if(account.signedIn&&loadedFor!==account.id){loadedFor=account.id;reload();}
  });
  document.addEventListener('click',async e=>{
