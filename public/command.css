@@ -132,7 +132,8 @@ input,textarea { color:var(--ink); }
 .metric-value .unit { color:var(--muted); font-size:13px; }
 .result-header h2:before { display:none; }
 .result-bottom { border-color:var(--line); color:var(--muted); font-size:12px; }
-.result-bottom .text-button { color:var(--accent); }
+.result-bottom .share-button { color:var(--accent); font-size:12px; }
+.condition-pill { background:#f0f3f2; color:#4b5853; border-radius:4px; }
 .analysis-grid { gap:20px; } .stat-table :is(th,td) { font-size:13px; border-color:var(--line); }
 .calculation-notes { padding:16px 0; background:none; border:0; border-bottom:1px solid var(--line); border-radius:0; color:var(--muted); }
 .calculation-notes summary { font-size:13px; cursor:pointer; } .calculation-notes p { font-size:12px; }
