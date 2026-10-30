@@ -241,6 +241,45 @@ try{
  await command('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/__growth_test?retry=1'},sessionId);await waitFor('!!document.querySelector("[data-growth=retry]")');
  await command('Network.setBlockedURLs',{urls:[]},sessionId);await evaluate('document.querySelector("[data-growth=retry]").click()');await waitFor('!!document.querySelector("#growth-goal-form")');
  console.log('Verified growth data network failure and successful retry.');
+ // Publish structured guides through the real password-protected community editor.
+ await command('Network.setBlockedURLs',{urls:[]},sessionId);
+ await command('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/__community_test#community'},sessionId);
+ await waitFor('!!globalThis.nocFixture && !!document.querySelector("#noc-feed [data-noc=compose]")');
+ const publishStrategy=async(id,title,level,plus)=>{
+  await evaluate('document.querySelector("[data-noc=compose-guide]").click()');await waitFor('document.querySelector("#noc-password-dialog").open');
+  await evaluate('(()=>{const f=document.querySelector("#noc-password-form");f.elements.password.value="test-pass";f.elements.confirm.value="test-pass";f.requestSubmit();})()');
+  await waitFor('!!document.querySelector(".strategy-enable") && !document.querySelector("#noc-editor [type=submit]").disabled');
+  await evaluate('(()=>{const f=document.querySelector("#noc-editor"),c=f.querySelector(".strategy-enable");c.checked=true;c.dispatchEvent(new Event("change"));f.elements.title.value='+JSON.stringify(title)+';f.elements.body.value="도전 조건과 운용 순서를 기록한 테스트 공략";f.querySelector(".strategy-stage").value="S250-0";const unit=f.querySelector(".strategy-cat");unit.value="'+id+'";unit.dispatchEvent(new Event("change"));f.querySelector(".strategy-form").value="2";f.querySelector(".strategy-level").value="'+level+'";f.querySelector(".strategy-plus").value="'+plus+'";f.querySelector(".strategy-public-consent").checked=true;})()');
+  await evaluate('document.querySelector(".strategy-editor").scrollIntoView({block:"start"});window.scrollBy(0,-130)');
+  const editorShot=await command('Page.captureScreenshot',{format:'png',captureBeyondViewport:false,fromSurface:true},sessionId);await writeFile(path.join(out,'strategy-editor-'+id+'.png'),Buffer.from(editorShot.data,'base64'));
+  await evaluate('document.querySelector("#noc-editor").requestSubmit()');
+  await waitFor('!!document.querySelector(".strategy-compare")');
+ };
+ await publishStrategy(0,'대체 후보가 필요한 공략',20,10);
+ assert.ok(await evaluate('nocFixture.calls.some(c=>c.action==="save_post" && c.password==="test-pass" && c.strategy?.publishAccepted===true && c.strategy?.stageKey==="S250-0")'),'Guide publication bypassed password or consent');
+ await evaluate('document.querySelector(".strategy-compare").click()');await waitFor('!!document.querySelector("[data-strategy-replace]")');
+ assert.ok((await evaluate('document.querySelector(".strategy-comparison").textContent')).includes('미보유'),'Missing unit not explained');
+ await evaluate('document.querySelector("[data-strategy-replace]").click()');assert.ok((await evaluate('document.querySelector(".strategy-comparison").textContent')).includes('1 / 1 슬롯'),'Replacement did not populate the draft');
+ assert.equal(await evaluate('nocFixture.calls.filter(c=>c.action==="save_game_profile").length'),0,'Adapting a guide changed the game profile');
+ await evaluate('document.querySelector(".strategy-comparison").scrollIntoView({block:"start"});window.scrollBy(0,-130)');
+ const compareShot=await command('Page.captureScreenshot',{format:'png',captureBeyondViewport:false,fromSurface:true},sessionId);await writeFile(path.join(out,'strategy-comparison-390.png'),Buffer.from(compareShot.data,'base64'));
+ await publishStrategy(32,'내 조건에 가까운 공략',30,0);
+ await evaluate('document.querySelector("[data-noc=guide-browser]").click()');await waitFor('document.querySelectorAll(".strategy-result").length===2');
+ await evaluate('(()=>{const s=document.querySelector(".strategy-search").elements.sort;s.value="similar";s.dispatchEvent(new Event("change"));})()');
+ await waitFor('!!nocFixture.calls.find(c=>c.action==="list_guides" && c.similar===true) && document.querySelectorAll(".strategy-result").length===2');
+ assert.ok((await evaluate('document.querySelector(".strategy-result h3").textContent')).includes('가까운'),'Similar condition sorting failed');
+ await evaluate('(()=>{const s=document.querySelector(".strategy-search").elements.outcome;s.value="failed";s.dispatchEvent(new Event("change"));})()');await waitFor('!!document.querySelector(".strategy-empty")');
+ await evaluate('(()=>{const s=document.querySelector(".strategy-search").elements.outcome;s.value="clear";s.dispatchEvent(new Event("change"));})()');await waitFor('document.querySelectorAll(".strategy-result").length===2');
+ assert.equal(await evaluate('document.documentElement.scrollWidth>innerWidth+1'),false,'Strategy search mobile overflow');
+ for(const width of [1440,390]){
+  await command('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<600},sessionId);
+  await evaluate('document.querySelector(".strategy-browser").scrollIntoView({block:"start"});window.scrollBy(0,-130)');
+  const shot=await command('Page.captureScreenshot',{format:'png',captureBeyondViewport:false,fromSurface:true},sessionId);await writeFile(path.join(out,'strategy-search-'+width+'.png'),Buffer.from(shot.data,'base64'));
+ }
+ await evaluate('document.querySelector(".strategy-result [data-noc=post]").click()');await waitFor('!!document.querySelector(".strategy-compare")');
+ await evaluate('document.querySelector(".strategy-compare").click()');await waitFor('!!document.querySelector(".strategy-comparison h4")');
+ await evaluate('nocFixture.changeAccount()');await waitFor('document.querySelector(".strategy-comparison").textContent===""');
+ console.log('Verified structured guide editor/consent/password publication, own-profile comparison, replacement draft without profile writes, similarity sorting, outcome filters, responsive search and account-change privacy clearing.');
  await command('Target.closeTarget',{targetId});
  assert.ok(report.every(r=>r.issues.length===0),'Interface layout failures; inspect interface-review/report.json');
 }catch(error){fatal=error;}

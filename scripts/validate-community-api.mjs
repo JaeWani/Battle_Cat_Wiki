@@ -5,6 +5,8 @@ async function rpc(action,payload={}){
  return {response,data:await response.json()};
 }
 const boards=await rpc('boards');assert(boards.response.ok);assert.equal(boards.data.length,4);
+const guides=await rpc('list_guides');assert(guides.response.ok);assert(Array.isArray(guides.data));
+const matches=await rpc('list_guides',{similar:true});assert(!matches.response.ok,'Anonymous profile matching allowed');
 const settings=await rpc('site_settings');assert(settings.response.ok);assert.equal(typeof settings.data.registration_open,'boolean');
 const character=await rpc('character',{key:'c25-2'});assert(character.response.ok);assert.equal(typeof character.data.count,'number');
 for(const action of ['create_post','comment','save_post','edit_comment','delete_post','delete_comment','check_content_password','admin','request_deletion','game_profile','save_game_profile','delete_game_profile','set_avatar']){

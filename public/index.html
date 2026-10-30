@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="profile-editor.css?v=manual-1">
 <link rel="stylesheet" href="profile-avatar.css?v=avatar-mobile-1">
 <link rel="stylesheet" href="growth.css?v=growth-1">
+<link rel="stylesheet" href="strategy.css?v=strategy-1">
 </head>
 <body>
 <a class="skip" href="#main">본문으로 이동</a>
@@ -62,7 +63,7 @@
  <div class="catalog-intro page-heading"><h1>게시판</h1></div>
  <div id="community-message" role="status" class="noc-message" hidden></div>
  <div class="noc-community-layout">
-  <aside class="noc-sidebar"><h2>게시판</h2><div id="noc-boards"></div><button class="text-button" data-noc="account">내 활동 · 알림 →</button><button class="text-button" data-noc="admin" id="noc-admin-button" hidden>운영 관리 →</button><button class="text-button" data-noc="policy" data-policy="terms">이용약관 →</button><button class="text-button" data-noc="policy" data-policy="privacy">개인정보 처리 안내 →</button></aside>
+  <aside class="noc-sidebar"><h2>게시판</h2><div id="noc-boards"></div><button class="text-button" data-noc="guide-browser">맞춤 공략 찾기 →</button><button class="text-button" data-noc="compose-guide">공략 등록 →</button><button class="text-button" data-noc="account">내 활동 · 알림 →</button><button class="text-button" data-noc="admin" id="noc-admin-button" hidden>운영 관리 →</button><button class="text-button" data-noc="policy" data-policy="terms">이용약관 →</button><button class="text-button" data-noc="policy" data-policy="privacy">개인정보 처리 안내 →</button></aside>
   <div class="noc-main"><div class="noc-list-toolbar"><label class="searchbox"><span aria-hidden="true">⌕</span><input id="noc-search" type="search" maxlength="100" placeholder="게시글 제목·본문 검색" aria-label="게시글 검색"></label><button class="primary-button" data-noc="compose">글쓰기</button></div><div id="noc-feed" aria-live="polite"><p>게시판을 불러오는 중이에요.</p></div></div>
  </div>
 </section>
@@ -78,5 +79,5 @@
 <dialog id="picker-dialog" class="picker-dialog" aria-labelledby="picker-title"><div class="dialog-header"><div><span class="eyebrow">CHOOSE YOUR CHARACTER</span><h2 id="picker-title">적군 캐릭터 선택</h2></div><button class="close-dialog" data-close="picker-dialog" aria-label="선택창 닫기">×</button></div><div class="picker-controls"><label class="searchbox"><span aria-hidden="true">⌕</span><input id="picker-search" type="search" placeholder="이름 또는 캐릭터 ID로 검색" aria-label="선택할 캐릭터 검색"></label><select id="picker-rarity" aria-label="선택창 희귀도"><option value="all">전체 희귀도</option></select><div id="picker-filters" class="trait-filters" aria-label="선택창 속성 필터"></div><p id="picker-count" role="status"></p></div><div id="picker-grid" class="unit-grid picker-grid"></div><div id="picker-pagination" class="pagination"></div></dialog>
 <dialog id="detail-dialog" class="detail-dialog" aria-labelledby="detail-title"><div id="detail-content"></div><button class="close-dialog" data-close="detail-dialog" aria-label="상세 정보 닫기">×</button></dialog>
 <div id="toast" class="toast" role="status" hidden></div>
-<script type="module" src="js/app.mjs?v=growth-3"></script>
+<script type="module" src="js/app.mjs?v=strategy-1"></script>
 </body></html>

@@ -1,9 +1,10 @@
+import {initStrategyTools} from './strategy-tools.mjs';
 import {validContentPassword,initContentPasswordDialog} from './content-password.mjs';
-import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=password-1';
+import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=strategy-1';
 import {COMMUNITY_CONFIG as config} from './community-config.mjs?v=manual-1';
 import {AUTH_PROVIDERS,BOARD_NAMES,escapeHTML as esc,validPost,safeImagePath,ratingLabel} from './community-model.mjs?v=google-only-1';
 const $=s=>document.querySelector(s),date=v=>new Date(v).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'short'});
-let passwordPrompt;
+let passwordPrompt,strategyTools;
 let client,ready,session=null,me=null,providers={},siteSettings={registration_open:false,contact_email:""},inputCallback=null,requestId=0,charRequest=0;
 const state={board:'all',query:'',page:0,screen:'list',post:null,editor:null};
 const postQuery=new URLSearchParams(location.search).get('post');
@@ -21,7 +22,7 @@ function memberRequired(){if(!session||me?.status!=='active'){renderAccount();$(
 function boardButtons(){$('#noc-boards').innerHTML=Object.entries(BOARD_NAMES).map(([id,name])=>'<button data-noc="board" data-board="'+id+'" aria-pressed="'+(state.board===id)+'" class="'+(state.board===id?'active':'')+'">'+name+'</button>').join('');}
 function setPostURL(id){const url=new URL(location.href);if(id)url.searchParams.set('post',id);else url.searchParams.delete('post');history.replaceState(null,'',url);}
 function clearEditor(){if(state.editor)delete state.editor.password;state.editor=null;}
-function listView(){clearEditor();state.screen='list';state.post=null;setPostURL(null);renderFeed();}
+function listView(){strategyTools?.reset();clearEditor();state.screen='list';state.post=null;setPostURL(null);renderFeed();}
 async function renderFeed(){
  const ticket=++requestId;boardButtons();$('#noc-feed').innerHTML='<p class="noc-loading" role="status">게시글을 불러오는 중…</p>';
  try{
@@ -42,12 +43,13 @@ async function signedImages(paths,author,id){
  return results.filter(Boolean);
 }
 async function showPost(id){
- clearEditor();
+ strategyTools?.reset();clearEditor();
  const ticket=++requestId;state.screen='post';state.post=id;setPostURL(id);$('#noc-feed').innerHTML='<p role="status">게시글을 불러오는 중…</p>';
  try{
   const [p,comments]=await Promise.all([api('post',{id}),api('comments',{post_id:id,page:0})]);if(ticket!==requestId)return;
   const images=await signedImages(p.images,p.author_id,p.id);if(ticket!==requestId)return;
   $('#noc-feed').innerHTML='<article class="noc-post-detail"><button class="text-button" data-noc="list">← 목록으로</button><span class="tag">'+BOARD_NAMES[p.board]+'</span><h2>'+esc(p.title)+'</h2><p class="noc-meta">'+esc(p.nickname)+' · '+date(p.created_at)+(p.status!=='published'?' · '+esc(p.status):'')+'</p><div class="noc-body">'+esc(p.body)+'</div><div class="noc-post-images">'+images.map(i=>'<a href="'+esc(i.url)+'" target="_blank" rel="noopener noreferrer"><img src="'+esc(i.url)+'" alt="게시글 첨부 이미지" loading="lazy"></a>').join('')+'</div><div class="noc-text-actions">'+(session?.user.id===p.author_id&&['published','draft'].includes(p.status)?'<button data-noc="edit-post" data-id="'+p.id+'">수정</button><button data-noc="delete-post" data-id="'+p.id+'">삭제</button>':'')+(session&&p.status==='published'?'<button data-noc="report" data-target="post" data-id="'+p.id+'">신고</button>':'')+'</div></article><section class="noc-comments"><h3>댓글</h3><div id="noc-post-comments" data-page="0">'+commentMarkup(comments)+'</div><button class="text-button" data-noc="more-comments" data-target="post" data-id="'+id+'" '+(comments.length<=20?'hidden':'')+'>댓글 더 보기 →</button>'+commentForm('post',id)+'</section>';
+  if(p.strategy){const section=document.createElement('section');$('#noc-feed .noc-post-detail').append(section);strategyTools.renderPost(section,p).catch(e=>{if(section.isConnected)section.textContent=e.message;});}
  }catch(error){if(ticket===requestId){$('#noc-feed').innerHTML='<p class="noc-error">'+esc(error.message)+'</p><button class="text-button" data-noc="list">목록으로 →</button>';}}
 }
 async function startEditor(id){
@@ -63,7 +65,8 @@ async function startEditor(id){
  }
  state.screen='edit';state.editor=p;
  $('#noc-feed').innerHTML='<form id="noc-editor"><button class="text-button" type="button" data-noc="list">← 목록으로</button><h2>'+(id?'게시글 수정':'게시글 작성')+'</h2><p class="field-help">수정·삭제 비밀번호를 확인했습니다.</p><p class="field-help">'+BOARD_NAMES[p.board]+' · 본문에는 HTML이 실행되지 않아요.</p><label>제목<input name="title" value="'+esc(p.title)+'" minlength="2" maxlength="100" required></label><label>본문<textarea name="body" rows="12" minlength="2" maxlength="20000" required>'+esc(p.body)+'</textarea></label><label>사진 첨부<input type="file" id="noc-image-input" accept="image/jpeg,image/png,image/webp" multiple></label><p class="field-help">총 3장 · 업로드 시 WebP로 변환 · 장당 최대 500KB · 원본 파일은 장당 8MB 이하</p><div id="noc-editor-images"></div><div class="noc-form-actions"><button class="primary-button" type="submit">게시하기</button><button type="button" class="text-button" data-noc="list">작성 중단</button></div></form>';
- await renderEditorImages();
+ const form=$('#noc-editor'),submit=form.querySelector('[type=submit]');submit.disabled=true;
+ try{await renderEditorImages();await strategyTools.mountEditor(form,p);}finally{if(submit.isConnected)submit.disabled=false;}
 }
 async function renderEditorImages(){
  if(!state.editor)return;const p=await api('post',{id:state.editor.id});state.editor.images=p.images;const images=await signedImages(p.images,p.author_id,p.id);
@@ -152,7 +155,9 @@ function bindEvents(){
     const url=new URL(location.href);url.search='';url.hash='community';
     const {error}=await client.auth.signInWithOAuth({provider:button.dataset.provider,options:{redirectTo:url.href}});if(error)throw error;return;
    }
-   if(action==='logout'){passwordPrompt.reset();clearEditor();const {error}=await client.auth.signOut();if(error)throw error;session=null;await refreshMe();return;}
+   if(action==='logout'){strategyTools.reset();passwordPrompt.reset();clearEditor();const {error}=await client.auth.signOut();if(error)throw error;session=null;await refreshMe();return;}
+   if(action==='guide-browser'){clearEditor();state.screen='guides';state.post=null;requestId++;setPostURL(null);await strategyTools.renderBrowser($('#noc-feed'));return;}
+   if(action==='compose-guide'){state.board='guide';$('#noc-account-dialog').close();await startEditor();return;}
    if(action==='board'){state.board=button.dataset.board;state.page=0;listView();return;}
    if(action==='list'){listView();return;}
    if(action==='page'){state.page=Number(button.dataset.page);await renderFeed();return;}
@@ -201,7 +206,7 @@ function bindEvents(){
     if(!siteSettings.registration_open&&!me?.role)throw new Error('정식 가입 안내를 준비 중이에요.');
     await api('onboard',{nickname:form.elements.nickname.value,age_confirmed:form.elements.age.checked,terms_accepted:form.elements.terms.checked,privacy_accepted:form.elements.privacy.checked,policy_version:POLICY_VERSION});await refreshMe();showMessage('가입이 완료됐어요.');
    }else if(form.id==='noc-editor'){
-    memberRequired();const values=validPost(form.elements.title.value,form.elements.body.value);const result=await api('save_post',{id:state.editor.id,password:state.editor.password,...values});clearEditor();await showPost(result.id);await refreshMe();
+    memberRequired();const values=validPost(form.elements.title.value,form.elements.body.value);const result=await api('save_post',{id:state.editor.id,password:state.editor.password,...values,...strategyTools.readEditor(form)});clearEditor();await showPost(result.id);await refreshMe();
    }else{memberRequired();await api('comment',{body:form.elements.body.value,password:validContentPassword(form.elements.password.value),...(form.dataset.target==='post'?{post_id:form.dataset.id}:{character_key:form.dataset.id})});form.reset();await refreshComments();}
   }catch(error){failure(error);let target=form.querySelector('.noc-inline-error');if(!target){target=document.createElement('p');target.className='noc-inline-error';target.setAttribute('role','alert');form.append(target);}target.textContent=error.message;}
   finally{if(button.isConnected)button.disabled=false;}
@@ -211,11 +216,11 @@ function bindEvents(){
  let timer;$('#noc-search').addEventListener('input',event=>{clearTimeout(timer);state.query=event.target.value;state.page=0;timer=setTimeout(()=>{clearEditor();state.screen='list';renderFeed();},250);});
 }
 export function initCommunity(){
- passwordPrompt=initContentPasswordDialog();boardButtons();bindEvents();
- window.addEventListener('hashchange',()=>{if(location.hash!=='#community'){passwordPrompt.reset();if(state.editor)listView();}});
+ passwordPrompt=initContentPasswordDialog();strategyTools=initStrategyTools({api,getAccount:()=>({id:session?.user?.id,status:me?.status})});boardButtons();bindEvents();
+ window.addEventListener('hashchange',()=>{if(location.hash!=='#community'){strategyTools.reset();passwordPrompt.reset();if(state.editor)listView();}});
  ready=(async()=>{
   const sdk=await import(config.sdkURL);client=sdk.createClient(config.url,config.publishableKey,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-  client.auth.onAuthStateChange((event,nextSession)=>{if(session?.user?.id!==nextSession?.user?.id){passwordPrompt.reset();clearEditor();document.querySelectorAll('.noc-comment-form input[type=password]').forEach(i=>i.value='');if($('#noc-editor'))listView();}session=nextSession;setTimeout(()=>refreshMe().catch(failure),0);});
+  client.auth.onAuthStateChange((event,nextSession)=>{if(session?.user?.id!==nextSession?.user?.id){passwordPrompt.reset();strategyTools.reset();clearEditor();document.querySelectorAll('.noc-comment-form input[type=password]').forEach(i=>i.value='');if($('#noc-editor'))listView();}session=nextSession;setTimeout(()=>refreshMe().catch(failure),0);});
   const {data,error}=await client.auth.getSession();if(error)throw error;session=data.session;
   try{const response=await fetch(config.url+'/auth/v1/settings',{headers:{apikey:config.publishableKey}});if(response.ok)providers=(await response.json()).external||{};}catch{/* Provider availability stays disabled until verified. */}
   return client;
