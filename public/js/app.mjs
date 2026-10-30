@@ -1,8 +1,8 @@
-import {initProfile,updateProfileCatalog} from './profile.mjs?v=strategy-1';
-import {initCommunity,renderCharacterCommunity} from './community.mjs?v=strategy-1';
+import {initProfile,updateProfileCatalog} from './profile.mjs?v=simple-1';
+import {initCommunity,renderCharacterCommunity} from './community.mjs?v=simple-1';
 import {characterKey} from './community-model.mjs?v=google-only-1';
-import {initStages} from './stage-guide.mjs?v=notice-links-1';
-import {initHome} from './home.mjs?v=save-1';
+import {initStages} from './stage-guide.mjs?v=simple-1';
+import {initHome} from './home.mjs?v=simple-1';
 import {calculate,statsAt,searchUnits,TRAITS,RARITIES,ABILITIES} from './engine.mjs';
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(n,d=0)=>Number.isFinite(n)?n.toLocaleString('ko-KR',{maximumFractionDigits:d}):'불가';
@@ -47,7 +47,7 @@ function selectedUnits(){
   const {cat,enemy}=currentUnits();
   for(const [kind,u]of [['cat',cat],['enemy',enemy]]){
     const target=$(`#selected-${kind}`);target.classList.toggle('enemy-image',kind==='enemy');
-    target.innerHTML=`${image(u,'class="portrait"')}<div><span class="unit-id">${kind==='cat'?'CAT':'ENEMY'} NO. ${String(u.id).padStart(3,'0')}${kind==='cat'?` / FORM ${u.form+1}`:''}</span><button class="selected-detail" data-detail="${u.key}" data-kind="${kind}" aria-label="${esc(u.name)} 상세 정보"><h3>${esc(u.name)}</h3></button><div class="tag-list">${tags(u,kind)}</div></div>`;
+    target.innerHTML=`${image(u,'class="portrait"')}<div><span class="unit-id">#${u.id}${kind==='cat'?` · ${u.form+1}진화`:''}</span><button class="selected-detail" data-detail="${u.key}" data-kind="${kind}" aria-label="${esc(u.name)} 상세 정보"><h3>${esc(u.name)}</h3></button><div class="tag-list">${tags(u,kind)}</div></div>`;
   }
 }
 function inputOptions(){
@@ -136,7 +136,7 @@ function renderDetail(){
   const {u,kind}=detail,unitStat=statsAt(u,{level:detail.value,magnification:detail.value,treasure:state.treasure==='max',curves:meta.levelCurves});
   const forms=kind==='cat'?cats.filter(c=>c.id===u.id):[];
   const ranges=u.longStart.map((start,i)=>`${start} ~ ${start+(u.longLength[i]||0)}`);
-  $('#detail-content').innerHTML=`<div class="detail-hero">${image(u)}<div><span class="unit-id">${kind==='cat'?'CAT':'ENEMY'} NO. ${String(u.id).padStart(3,'0')}</span><h2 id="detail-title">${esc(u.name)}</h2><div class="tag-list">${tags(u,kind)}</div><p class="detail-names">${esc(u.nameJP)}${u.nameEN?` / ${esc(u.nameEN)}`:''}</p></div></div>${forms.length?`<div class="detail-form-options" aria-label="진화 형태">${forms.map(f=>`<button data-form="${f.key}" class="${f.key===u.key?'selected':''}">${f.form+1}형태</button>`).join('')}</div>`:''}<div class="detail-options"><label for="detail-value">${kind==='cat'?'총 레벨':'적 배율 (%)'}</label><input id="detail-value" type="number" min="${kind==='cat'?1:.01}" max="${kind==='cat'?u.maxLevel:1000000}" step="${kind==='cat'?1:'any'}" value="${detail.value}" inputmode="decimal"><span>${kind==='cat'?`최대 ${u.maxLevel} · 세계편 보물 ${state.treasure==='max'?'최대':'없음'}`:'100% = 기본 능력치'}</span></div><p id="detail-error" role="alert" class="error-message" hidden></p><dl class="detail-stats"><div class="detail-stat"><dt>체력</dt><dd>${fmt(unitStat.hp)}</dd></div><div class="detail-stat"><dt>공격력 합계</dt><dd>${fmt(unitStat.attack)}</dd></div><div class="detail-stat"><dt>기본 DPS</dt><dd>${fmt(unitStat.dps,1)}</dd></div><div class="detail-stat"><dt>인식 사거리</dt><dd>${u.range}</dd></div><div class="detail-stat"><dt>이동 속도</dt><dd>${u.speed}</dd></div><div class="detail-stat"><dt>넉백 횟수</dt><dd>${u.kb}</dd></div></dl><h3>공격 정보</h3><p class="detail-text" id="detail-attack-info">${attackType(u)} · 공격 주기 ${fmt(u.attackF/30,2)}초 (${u.attackF}F)<br>타격별 공격력: ${unitStat.active.map(i=>fmt(unitStat.attacks[i])).join(' + ')||'직접 공격 없음'}<br>공격 발생: ${unitStat.active.map(i=>`${fmt(u.preswings[i]/30,2)}초`).join(' / ')||'없음'}${ranges.length?`<br>타격 범위: ${ranges.join(' / ')} (인식 위치 기준)` : ''}</p><h3>${kind==='cat'?'공격 대상 속성':'적 속성'}</h3><div class="tag-list">${tags(u,'enemy')}</div><h3>특수능력</h3><div class="abilities">${Object.keys(u.abilities).length?Object.entries(u.abilities).map(([id,v])=>`<span class="ability-chip">${esc(abilityText(id,v))}</span>`).join(''):'<span class="detail-text">별도 특수능력 없음</span>'}</div><p class="source-note">데이터: battlecatsinfo · JP ${meta.japanVersion}<br>${!u.koreanName?'한국어 이름이 없어 원본 이름으로 표시합니다. ':''}상세 능력치는 본능·냥콤보 및 상대별 특수효과를 적용하기 전입니다.<br>캐릭터 아트 © PONOS Corp. 및 각 권리자</p><button class="primary-button" data-apply-detail="true">이 캐릭터로 계산하기 <span aria-hidden="true">→</span></button><section id="character-community"></section>`;
+  $('#detail-content').innerHTML=`<div class="detail-hero">${image(u)}<div><span class="unit-id">#${u.id}</span><h2 id="detail-title">${esc(u.name)}</h2><div class="tag-list">${tags(u,kind)}</div><p class="detail-names">${esc(u.nameJP)}${u.nameEN?` / ${esc(u.nameEN)}`:''}</p></div></div>${forms.length?`<div class="detail-form-options" aria-label="진화 형태">${forms.map(f=>`<button data-form="${f.key}" class="${f.key===u.key?'selected':''}">${f.form+1}형태</button>`).join('')}</div>`:''}<div class="detail-options"><label for="detail-value">${kind==='cat'?'총 레벨':'적 배율 (%)'}</label><input id="detail-value" type="number" min="${kind==='cat'?1:.01}" max="${kind==='cat'?u.maxLevel:1000000}" step="${kind==='cat'?1:'any'}" value="${detail.value}" inputmode="decimal"><span>${kind==='cat'?`최대 ${u.maxLevel} · 세계편 보물 ${state.treasure==='max'?'최대':'없음'}`:'100% = 기본 능력치'}</span></div><p id="detail-error" role="alert" class="error-message" hidden></p><dl class="detail-stats"><div class="detail-stat"><dt>체력</dt><dd>${fmt(unitStat.hp)}</dd></div><div class="detail-stat"><dt>공격력 합계</dt><dd>${fmt(unitStat.attack)}</dd></div><div class="detail-stat"><dt>기본 DPS</dt><dd>${fmt(unitStat.dps,1)}</dd></div><div class="detail-stat"><dt>인식 사거리</dt><dd>${u.range}</dd></div><div class="detail-stat"><dt>이동 속도</dt><dd>${u.speed}</dd></div><div class="detail-stat"><dt>넉백 횟수</dt><dd>${u.kb}</dd></div></dl><h3>공격 정보</h3><p class="detail-text" id="detail-attack-info">${attackType(u)} · 공격 주기 ${fmt(u.attackF/30,2)}초 (${u.attackF}F)<br>타격별 공격력: ${unitStat.active.map(i=>fmt(unitStat.attacks[i])).join(' + ')||'직접 공격 없음'}<br>공격 발생: ${unitStat.active.map(i=>`${fmt(u.preswings[i]/30,2)}초`).join(' / ')||'없음'}${ranges.length?`<br>타격 범위: ${ranges.join(' / ')} (인식 위치 기준)` : ''}</p><h3>${kind==='cat'?'공격 대상 속성':'적 속성'}</h3><div class="tag-list">${tags(u,'enemy')}</div><h3>특수능력</h3><div class="abilities">${Object.keys(u.abilities).length?Object.entries(u.abilities).map(([id,v])=>`<span class="ability-chip">${esc(abilityText(id,v))}</span>`).join(''):'<span class="detail-text">별도 특수능력 없음</span>'}</div><p class="source-note">데이터: battlecatsinfo · JP ${meta.japanVersion}<br>${!u.koreanName?'한국어 이름이 없어 원본 이름으로 표시합니다. ':''}상세 능력치는 본능·냥콤보 및 상대별 특수효과를 적용하기 전입니다.<br>캐릭터 아트 © PONOS Corp. 및 각 권리자</p><button class="primary-button" data-apply-detail="true">이 캐릭터로 계산하기 <span aria-hidden="true">→</span></button><section id="character-community"></section>`;
   renderCharacterCommunity(characterKey(kind,u.key),$("#character-community"));
 }
 function openDetail(key,kind){
@@ -153,7 +153,6 @@ function setView(view,updateHash=true){
     renderCatalog();
   }
   document.title=`${{home:'이벤트 일정',stages:'스테이지 정보',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내',community:'게시판',profile:'내 정보'}[view]} · 냥코 작전 사령부`;
-  if($('#workspace-title'))$('#workspace-title').textContent={home:'이벤트 일정',stages:'스테이지',calculator:'전투 계산기',cats:'아군 도감',enemies:'적군 도감',about:'데이터 안내',community:'게시판',profile:'내 정보'}[view];
   if(updateHash&&location.hash!==`#${view}`)history.replaceState(null,'',`#${view}`);
 }
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2500);}
@@ -216,7 +215,6 @@ async function init(){
     updateProfileCatalog(cats,enemies);
     readState();wire();selectedUnits();syncInputs();updateCalculation();
     for(const select of [$('#catalog-rarity'),$('#picker-rarity')])select.innerHTML='<option value="all">전체 희귀도</option>'+RARITIES.map((r,i)=>`<option value="${i}">${r}</option>`).join('');
-    $('#explore-enemies').innerHTML=[0,4,17,24,32].map(id=>{const u=enemies.find(e=>e.id===id);return `<button class="explore-card" data-detail="${u.key}" data-kind="enemy">${image(u)}<span>${esc(u.name)}</span></button>`;}).join('');
     $('#footer-version').textContent=`JP ${meta.japanVersion} · 아군 ${meta.catCount}종 / 적군 ${meta.enemyCount}종 · 한국판과 차이가 있을 수 있습니다.`;
     $('#data-meta').innerHTML=`<dl><dt>아군</dt><dd>${meta.catCount}종 · ${fmt(meta.formCount)}개 진화 형태</dd><dt>적군</dt><dd>${meta.enemyCount}종</dd><dt>기준 버전</dt><dd>일본판 ${meta.japanVersion} / 대만판 ${meta.taiwanVersion}</dd><dt>수집일</dt><dd>${new Date(meta.importedAt).toLocaleDateString('ko-KR',{timeZone:'Asia/Seoul'})}</dd><dt>데이터 커밋</dt><dd>${esc(meta.commit.slice(0,12))}</dd></dl>`;
     setView(location.hash.slice(1)||'home',false);$('#loading').hidden=true;

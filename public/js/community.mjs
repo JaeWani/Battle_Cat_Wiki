@@ -1,4 +1,4 @@
-import {initStrategyTools} from './strategy-tools.mjs';
+import {initStrategyTools} from './strategy-tools.mjs?v=simple-1';
 import {validContentPassword,initContentPasswordDialog} from './content-password.mjs';
 import {POLICY_VERSION,PRIVACY_HTML,TERMS_HTML} from './community-policy.mjs?v=strategy-1';
 import {COMMUNITY_CONFIG as config} from './community-config.mjs?v=manual-1';
@@ -36,7 +36,7 @@ async function renderFeed(){
 function commentMarkup(rows){
  return rows.slice(0,20).map(c=>'<article class="noc-comment" data-password-set="'+(c.password_set?'true':'false')+'"><div><strong>'+esc(c.nickname)+'</strong><small>'+date(c.created_at)+'</small></div><p>'+esc(c.body)+'</p><div class="noc-text-actions">'+(session?.user.id===c.author_id?'<button data-noc="edit-comment" data-id="'+c.id+'">수정</button><button data-noc="delete-comment" data-id="'+c.id+'">삭제</button>':'')+(session?'<button data-noc="report" data-target="comment" data-id="'+c.id+'">신고</button>':'')+'</div></article>').join('')||'<p class="field-help">아직 댓글이 없어요.</p>';
 }
-function commentForm(target,id){return '<form class="noc-comment-form" data-target="'+target+'" data-id="'+esc(id)+'"><label>댓글<textarea name="body" maxlength="2000" rows="3" required placeholder="서로를 존중하며 의견을 남겨주세요."></textarea></label><label>댓글 비밀번호<input name="password" type="password" minlength="4" maxlength="72" required autocomplete="new-password" placeholder="수정·삭제에 사용할 비밀번호"></label><p class="field-help">4자 이상 · 한글 등은 UTF-8 72바이트 이하</p><button class="primary-button" type="submit">댓글 등록</button></form>';}
+function commentForm(target,id){return '<form class="noc-comment-form" data-target="'+target+'" data-id="'+esc(id)+'"><label>댓글<textarea name="body" maxlength="2000" rows="3" required placeholder="댓글 입력"></textarea></label><label>댓글 비밀번호<input name="password" type="password" minlength="4" maxlength="72" required autocomplete="new-password" placeholder="수정·삭제에 사용할 비밀번호"></label><p class="field-help">4자 이상·최대 72바이트</p><button class="primary-button" type="submit">댓글 등록</button></form>';}
 async function signedImages(paths,author,id){
  const safe=paths.filter(p=>safeImagePath(p,author,id));
  const results=await Promise.all(safe.map(async path=>{const {data,error}=await client.storage.from('community-images').createSignedUrl(path,300);return error?null:{path,url:data.signedUrl};}));
@@ -64,7 +64,7 @@ async function startEditor(id){
   if(!p)return;
  }
  state.screen='edit';state.editor=p;
- $('#noc-feed').innerHTML='<form id="noc-editor"><button class="text-button" type="button" data-noc="list">← 목록으로</button><h2>'+(id?'게시글 수정':'게시글 작성')+'</h2><p class="field-help">수정·삭제 비밀번호를 확인했습니다.</p><p class="field-help">'+BOARD_NAMES[p.board]+' · 본문에는 HTML이 실행되지 않아요.</p><label>제목<input name="title" value="'+esc(p.title)+'" minlength="2" maxlength="100" required></label><label>본문<textarea name="body" rows="12" minlength="2" maxlength="20000" required>'+esc(p.body)+'</textarea></label><label>사진 첨부<input type="file" id="noc-image-input" accept="image/jpeg,image/png,image/webp" multiple></label><p class="field-help">총 3장 · 업로드 시 WebP로 변환 · 장당 최대 500KB · 원본 파일은 장당 8MB 이하</p><div id="noc-editor-images"></div><div class="noc-form-actions"><button class="primary-button" type="submit">게시하기</button><button type="button" class="text-button" data-noc="list">작성 중단</button></div></form>';
+ $('#noc-feed').innerHTML='<form id="noc-editor"><button class="text-button" type="button" data-noc="list">← 목록으로</button><h2>'+(id?'게시글 수정':'게시글 작성')+'</h2><p class="field-help">'+BOARD_NAMES[p.board]+'</p><label>제목<input name="title" value="'+esc(p.title)+'" minlength="2" maxlength="100" required></label><label>본문<textarea name="body" rows="12" minlength="2" maxlength="20000" required>'+esc(p.body)+'</textarea></label><label>사진 첨부<input type="file" id="noc-image-input" accept="image/jpeg,image/png,image/webp" multiple></label><p class="field-help">최대 3장·장당 8MB. 업로드 시 압축됩니다.</p><div id="noc-editor-images"></div><div class="noc-form-actions"><button class="primary-button" type="submit">게시하기</button><button type="button" class="text-button" data-noc="list">작성 중단</button></div></form>';
  const form=$('#noc-editor'),submit=form.querySelector('[type=submit]');submit.disabled=true;
  try{await renderEditorImages();await strategyTools.mountEditor(form,p);}finally{if(submit.isConnected)submit.disabled=false;}
 }

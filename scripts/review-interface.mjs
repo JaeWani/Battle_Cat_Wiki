@@ -57,20 +57,20 @@ try{
  const {sessionId}=await command('Target.attachToTarget',{targetId,flatten:true});
  await command('Page.enable',{},sessionId);await command('Runtime.enable',{},sessionId);
  const evaluate=async expression=>{const r=await command('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true},sessionId);if(r.exceptionDetails)throw new Error(JSON.stringify(r.exceptionDetails));return r.result.value;};
- const cases=[['home',1440],['stages',1440],['calculator',1440],['cats',1440],['enemies',1440],['community',1440],['profile',1440],['about',1440],['home',390],['calculator',390],['cats',390],['profile',390]];
+ const cases=[['home',1440],['stages',1440],['calculator',1440],['cats',1440],['enemies',1440],['community',1440],['profile',1440],['about',1440],['home',390],['calculator',390],['cats',390],['profile',390],['stages',390],['community',390],['about',390],['home',320],['profile',320],['home',768],['profile',768]];
  for(const [view,width]of cases){
   const height=width===390?1000:1100;
   await command('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<600},sessionId);
   await command('Page.navigate',{url:'http://127.0.0.1:'+server.address().port+'/#'+view},sessionId);
   let ready=false;const limit=Date.now()+20000;
   while(Date.now()<limit){
-   ready=await evaluate("document.querySelector('#footer-version')?.textContent.startsWith('JP ') && ("+JSON.stringify(view)+"==='about' || [...document.querySelectorAll('.nav-button')].some(e=>e.dataset.view==="+JSON.stringify(view)+" && e.getAttribute('aria-current')==='page')) && getComputedStyle(document.querySelector('.site-header')).backgroundColor==='rgb(17, 30, 48)'");
+   ready=await evaluate("document.querySelector('#footer-version')?.textContent.startsWith('JP ') && ("+JSON.stringify(view)+"==='about' || [...document.querySelectorAll('.nav-button')].some(e=>e.dataset.view==="+JSON.stringify(view)+" && e.getAttribute('aria-current')==='page')) && getComputedStyle(document.querySelector('.site-header')).backgroundColor==='rgb(255, 255, 255)'");
    if(ready)break;await new Promise(r=>setTimeout(r,200));
   }
   await new Promise(r=>setTimeout(r,350));
   const info=await evaluate(`({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,title:document.title,active:[...document.querySelectorAll('main>.view')].filter(e=>!e.hidden).map(e=>e.id),copy:[...document.querySelectorAll('main h1, main h2')].filter(e=>e.getClientRects().length).map(e=>e.textContent).join(' '),offenders:[...document.querySelectorAll('main *')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.right>innerWidth+2&&!e.closest('dialog')&&getComputedStyle(e).position!=='fixed'}).slice(0,8).map(e=>({tag:e.tagName,class:e.className,right:Math.round(e.getBoundingClientRect().right)}))})`);
   const expected=['cats','enemies'].includes(view)?'catalog-view':view+'-view';
-  const issues=[];if(!ready)issues.push('route did not initialize');if(info.width!==width)issues.push('viewport mismatch');if(info.scrollWidth>width+1)issues.push('horizontal document overflow');if(info.active.length!==1||info.active[0]!==expected)issues.push('wrong active view');
+  const issues=[];if(!ready)issues.push('route did not initialize');if(view==='home' && !(await evaluate("document.querySelectorAll('.week-day').length===7 && document.querySelector('#home-loading').hidden && !document.querySelector('#home-event-list').textContent.includes('일정을 불러오지 못')")))issues.push('schedule did not render');if(view==='home' && !(await evaluate("document.querySelector('#home-date').getBoundingClientRect().width>=130 && document.querySelector('#event-today').getBoundingClientRect().height<45")))issues.push('date controls cramped');if(info.width!==width)issues.push('viewport mismatch');if(info.scrollWidth>width+1)issues.push('horizontal document overflow');if(info.active.length!==1||info.active[0]!==expected)issues.push('wrong active view');
   for(const phrase of ['나의 부대를','몇 대면 이길까','놓치지 말자냥','기다리고 있을까','숫자에도 출처가','상대를 알면, 공략이'])if(info.copy.includes(phrase))issues.push('promotional copy: '+phrase);
   const shot=await command('Page.captureScreenshot',{format:'png',captureBeyondViewport:false,fromSurface:true},sessionId);
   await writeFile(path.join(out,view+'-'+width+'.png'),Buffer.from(shot.data,'base64'));

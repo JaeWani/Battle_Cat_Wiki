@@ -26,16 +26,11 @@ function row(e,now){
 function render(){
   if(!data)return;
   const now=new Date(),today=kstDay(now),events=data.events;
-  const ongoing=events.filter(e=>eventStatus(e,now)==='ongoing');
-  const soon=ongoing.filter(e=>Date.parse(e.period.endAt)-now.getTime()<86400000);
   const selected=filterEvents(events,{day:state.day,category:state.category,query:state.query}).sort((a,b)=>{
     const order={ongoing:0,recurring:1,upcoming:2,ended:3};
     return (order[eventStatus(a,now)]??4)-(order[eventStatus(b,now)]??4)||(Date.parse(a.period?.endAt)||Infinity)-(Date.parse(b.period?.endAt)||Infinity);
   });
   $('#home-today').textContent=shortDay(today);
-  $('#home-live-count').textContent=ongoing.length;
-  $('#home-ending-count').textContent=soon.length;
-  $('#home-collection-count').textContent=events.filter(e=>e.period||e.recurrence).length;
   $('#home-date').value=state.day;
   $('#selected-day-title').textContent=state.day===today?'오늘의 일정':shortDay(state.day);
   $('#selected-day-count').textContent=`${selected.length}개 일정 · 한국 시간 기준`;
@@ -43,17 +38,14 @@ function render(){
     const day=shiftDay(state.day,i-3),count=events.filter(e=>onDay(e,day)).length;
     return `<button class="week-day ${day===state.day?'selected':''} ${day===today?'is-today':''}" data-event-day="${day}" aria-pressed="${day===state.day}"><span>${date(`${day}T12:00:00+09:00`,{weekday:'short'})}${day===today?' · 오늘':''}</span><b>${Number(day.slice(-2))}</b><small>${count?`${count}개`:'—'}</small></button>`;
   }).join('');
-  $('#home-event-list').innerHTML=selected.length?selected.map(e=>row(e,now)).join(''):`<div class="events-empty"><strong>${state.query||state.category!=='all'?'조건에 맞는 일정이 없어요.':'이 날짜에 확인된 일정이 없어요.'}</strong><p>공식 공지에서 확인한 일정만 표시합니다.<br>실제 게임 내 이벤트가 없다는 의미는 아니에요.</p><a href="${esc(safeURL(data.sourceUrl))}" target="_blank" rel="noopener noreferrer">공식 공지 확인 ↗</a></div>`;
+  $('#home-event-list').innerHTML=selected.length?selected.map(e=>row(e,now)).join(''):`<div class="events-empty"><strong>${state.query||state.category!=='all'?'조건에 맞는 일정이 없어요.':'이 날짜에 확인된 일정이 없어요.'}</strong><p>공지에 없는 게임 내 일정은 표시되지 않습니다.</p><a href="${esc(safeURL(data.sourceUrl))}" target="_blank" rel="noopener noreferrer">공식 공지 확인 ↗</a></div>`;
   for(const button of document.querySelectorAll('[data-event-category]')){const active=button.dataset.eventCategory===state.category;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}
   const stale=isStale(data.collectedAt,now);
-  $('#home-sync').innerHTML=`<span class="${stale?'sync-old':'sync-live'}"></span>${stale?'갱신 지연 · ':''}마지막 수집 ${date(data.collectedAt,{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})}`;
+  $('#home-sync').textContent=`업데이트 ${date(data.collectedAt,{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})}`;
   $('#home-stale').hidden=!stale;
   $('#home-source').href=safeURL(data.sourceUrl);
   const notices=events.filter(e=>!e.period&&!e.recurrence).slice(0,5);
-  $('#home-notices').innerHTML=notices.length?notices.map(e=>`<a class="news-item" href="${esc(safeURL(e.sourceUrl))}" target="_blank" rel="noopener noreferrer"><small>${e.publishedOn?esc(e.publishedOn.replaceAll('-','.')):'공식 소식'}</small><strong>${esc(e.title)}</strong><span>기간은 원문 확인 ↗</span></a>`).join(''):'<p class="field-help">개최 기간이 확인된 공지는 왼쪽 일정에 표시했어요.</p>';
-  const feature=ongoing.find(e=>e.category==='event'&&e.image)||ongoing.find(e=>e.image);
-  $('#home-feature').hidden=!feature;
-  if(feature)$('#home-feature').innerHTML=`<a href="${esc(safeURL(feature.sourceUrl))}" target="_blank" rel="noopener noreferrer"><div class="feature-caption"><span class="event-category">진행 중 이벤트</span><span>${endingLabel(feature,now)} ↗</span></div><img src="${esc(feature.image.path)}" alt="${esc(feature.title)} 공식 배너"><div class="feature-title">${esc(feature.title)}</div><p>${esc(periodText(feature))}</p></a>`;
+  $('#home-notices').innerHTML=notices.length?notices.map(e=>`<a class="news-item" href="${esc(safeURL(e.sourceUrl))}" target="_blank" rel="noopener noreferrer"><small>${e.publishedOn?esc(e.publishedOn.replaceAll('-','.')):'공식 소식'}</small><strong>${esc(e.title)}</strong><span>기간은 원문 확인 ↗</span></a>`).join(''):'<p class="field-help">추가 소식이 없습니다.</p>';
   $('#home-loading').hidden=true;
 }
 export async function initHome(){
@@ -74,6 +66,5 @@ export async function initHome(){
   }catch{
     $('#home-loading').hidden=true;$('#home-sync').textContent='일정 데이터 확인 필요';
     $('#home-event-list').innerHTML='<div class="events-empty"><strong>일정을 불러오지 못했어요.</strong><p>잠시 후 새로고침하거나 공식 공지에서 확인해 주세요.</p><a href="https://battlecats.club/kr/" target="_blank" rel="noopener noreferrer">공식 소식 확인 ↗</a></div>';
-    $('#home-live-count').textContent='—';$('#home-ending-count').textContent='—';$('#home-collection-count').textContent='—';
   }
 }
